@@ -1,0 +1,35 @@
+{
+  "name": "chronolog/chronolog",
+  "type": "library",
+  "description": "Chronolog is a tool that allows you to track events, user actions and data state in PHP applications",
+  "keywords": [
+    "log",
+    "logging",
+    "psr-3"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Informax",
+      "email": "maxim.kirichenko@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0 || ^8.0",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-simplexml": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Chronolog\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "chronolog\\": "tests/"
+    }
+  }
+}
