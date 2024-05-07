@@ -15,7 +15,8 @@
     }
   ],
   "require": {
-    "php": "^7.0 || ^8.0",
+    "php": "^8.0",
+    "psr/log": "^2.0 || ^3.0",
     "ext-pdo": "*",
     "ext-json": "*",
     "ext-curl": "*",
@@ -23,13 +24,12 @@
     "ext-simplexml": "*"
   },
   "autoload": {
-    "psr-4": {
-      "Chronolog\\": "src/"
-    }
+    "psr-4": {"Chronolog\\": "src"}
   },
   "autoload-dev": {
-    "psr-4": {
-      "chronolog\\": "tests/"
-    }
+    "psr-4": {"Chronolog\\Test\\": "test"}
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
   }
 }
