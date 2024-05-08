@@ -29,8 +29,9 @@ class LogRecord implements ArrayAccess
         public readonly DateTimeStatement $datetime,
         public readonly Severity $severity,
         public readonly string $message,
+        public readonly string $track, // belonging to the owner
         public array $assets = [], // non persistent properties
-        public bool $relevant = true // relevance of the entry
+        public bool $relevant = true, // relevance of the entry        
     ) {
     }
 
@@ -88,12 +89,40 @@ class LogRecord implements ArrayAccess
     {
         return [
             'datetime' => $this->datetime,
-            'severity' => $this->severity,
-            'severity_str' => $this->severity->getName(),
+            'severity' => $this->severity->value,
+            'severity_name' => $this->severity->getName(),
             'message' => $this->message,
+            'track' => $this->track,
             'assets' => $this->assets,
             'relevant' => $this->relevant
         ];
+    }
+
+    /**
+     * Create self-copy
+     *
+     * @return LogRecord
+     */
+    public function fork():LogRecord{
+        return static::clone($this);
+    }
+
+    /**
+     * Replacing the standard clone method, 
+     * because class contains properties in read-only state
+     *
+     * @param  LogRecord $source 
+     * @return LogRecord
+     */
+    public static function clone(LogRecord $source):LogRecord{
+        return new LogRecord(
+            clone $source->datetime,
+            $source->severity,
+            $source->message,
+            $source->track,
+            $source->assets,
+            $source->relevant            
+        );
     }
 }
 /** End of LogRecord **/

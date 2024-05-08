@@ -13,7 +13,7 @@
 namespace Chronolog;
 
 /**
- * Configurable
+ * AutoInitialized
  *
  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
  * @datetime 07.05.2024 11:20:55
@@ -26,4 +26,4 @@ class AutoInitialized
         $this->initialize($config);
     }
 }
-/** End of Configurable **/
+/** End of AutoInitialized **/

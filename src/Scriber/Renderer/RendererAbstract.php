@@ -22,6 +22,6 @@ use Chronolog\LogRecord;
  */
 abstract class RendererAbstract extends AutoInitialized implements RendererInterface
 {
-    abstract public function render(LogRecord $record): mixed;
+    abstract public function render(LogRecord $record): mixed;    
 }
 /** End of RendererAbstract **/

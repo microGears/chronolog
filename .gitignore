@@ -50,12 +50,9 @@ log-*.php
 *.ini
 composer.lock
 
-# Local environment directories
-.local*/
-.env*/
-locking
-runtime
-cache
+# PHPUnit
+.phpunit.*
+phpunit.xml
 
 # Vendors
 vendor

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of chronolog/chronolog.
  *
@@ -8,19 +9,20 @@
  * file that was distributed with this source code.
  */
 
- 
- 
- namespace Chronolog;
- 
- /**
-  * Utilits
-  *
-  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
-  * @datetime 07.05.2024 09:44:11
-  */
- final class Utilits
- {
-    public static function className($class, $normalize = false) {
+
+
+namespace Chronolog;
+
+/**
+ * Utilits
+ *
+ * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
+ * @datetime 07.05.2024 09:44:11
+ */
+final class Utilits
+{
+    public static function className($class, $normalize = false)
+    {
         $parts = explode('\\', is_object($class) ? get_class($class) : $class);
 
         $className = array_pop($parts);
@@ -31,11 +33,12 @@
         return $className;
     }
 
-    public static function normalizeName($name) {
+    public static function normalizeName($name)
+    {
         return strtolower(strtr($name, ['-' => '', '_' => '', ' ' => '', '\\' => '', '/' => '']));
     }
 
-        /**
+    /**
      * Returns the trailing name component of a path.
      * Note: this method is not aware of the actual filesystem, or path components such as "..".
      *
@@ -44,7 +47,8 @@
      * @return string the trailing name component of the given path.
      * @see http://www.php.net/manual/en/function.basename.php
      */
-    public static function basename($path, $suffix = '') {
+    public static function basename($path, $suffix = '')
+    {
         if (($len = mb_strlen($suffix)) > 0 && mb_substr($path, -$len) == $suffix) {
             $path = mb_substr($path, 0, -$len);
         }
@@ -55,25 +59,5 @@
 
         return $path;
     }
-
-    public static function clearInvisibleChars($str, $url_encoded = true) {
-        $non_displayables = [];
-
-        // every control character except newline (dec 10)
-        // carriage return (dec 13), and horizontal tab (dec 09)
-
-        if ($url_encoded) {
-            $non_displayables[] = '/%0[0-8bcef]/'; // url encoded 00-08, 11, 12, 14, 15
-            $non_displayables[] = '/%1[0-9a-f]/'; // url encoded 16-31
-        }
-
-        $non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S'; // 00-08, 11, 12, 14-31, 127
-
-        do {
-            $str = preg_replace($non_displayables, '', $str, -1, $count);
-        } while ($count);
-
-        return $str;
-    }
- }
- /** End of Utilits **/
+}
+/** End of Utilits **/

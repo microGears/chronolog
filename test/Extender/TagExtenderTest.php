@@ -30,7 +30,7 @@ class TagExtenderTest extends TestCase
     public function testExtender()
     {
         $aug = new TagExtender(['tags' => ['tag1', 'tag2', 'tag3']]);
-        $record = $aug(new LogRecord(new DateTimeStatement(), Severity::Info, "Simple test for TagExtender"));
+        $record = $aug(new LogRecord(new DateTimeStatement(), Severity::Info, "Simple test for TagExtender", 'test'));
 
         $this->assertArrayHasKey('tags', $record->assets);
         $this->assertIsArray($record->assets['tags']);

@@ -11,7 +11,7 @@
 
 
 
-namespace Chronolog\Test\Extenders;
+namespace Chronolog\Test\Scriber;
 
 use Chronolog\DateTimeStatement;
 use Chronolog\LogRecord;
@@ -40,7 +40,7 @@ class SysLogScriberTest extends TestCase
         $scriber1 = new SysLogScriber(['severity' => Severity::Error]);
         $scriber2 = new SysLogScriber(['severity' => [Severity::Debug, Severity::Info]]);
 
-        $record = new LogRecord(new DateTimeStatement(), Severity::Error, "Simple message");
+        $record = new LogRecord(new DateTimeStatement(), Severity::Error, "Simple message", "test");
         
         $this->assertTrue($scriber1->isAllowedSeverity($record));
         $this->assertFalse($scriber2->isAllowedSeverity($record));
