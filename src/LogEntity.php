@@ -9,12 +9,9 @@
  * file that was distributed with this source code.
  */
 
-
-
 namespace Chronolog;
 
 use ArrayAccess;
-
 
 /**
  * LogRecord
@@ -22,7 +19,7 @@ use ArrayAccess;
  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
  * @datetime 06.05.2024 19:02:15
  */
-class LogRecord implements ArrayAccess
+class LogEntity implements ArrayAccess
 {
 
     public function __construct(
@@ -101,9 +98,9 @@ class LogRecord implements ArrayAccess
     /**
      * Create self-copy
      *
-     * @return LogRecord
+     * @return LogEntity
      */
-    public function fork():LogRecord{
+    public function fork():LogEntity{
         return static::clone($this);
     }
 
@@ -111,18 +108,22 @@ class LogRecord implements ArrayAccess
      * Replacing the standard clone method, 
      * because class contains properties in read-only state
      *
-     * @param  LogRecord $source 
-     * @return LogRecord
+     * @param  LogEntity $source 
+     * @return LogEntity
      */
-    public static function clone(LogRecord $source):LogRecord{
-        return new LogRecord(
-            clone $source->datetime,
-            $source->severity,
-            $source->message,
-            $source->track,
-            $source->assets,
-            $source->relevant            
-        );
+    public static function clone(LogEntity $source):LogEntity{
+        // first way
+        // return new LogRecord(
+        //     clone $source->datetime,
+        //     $source->severity,
+        //     $source->message,
+        //     $source->track,
+        //     unserialize(serialize($source->assets)),
+        //     $source->relevant            
+        // );
+
+        // second way
+        return unserialize(serialize($source), ['allowed_classes' => true]);
     }
 }
 /** End of LogRecord **/

@@ -10,7 +10,7 @@
 
 namespace Chronolog\Scriber\Renderer;
 
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * RendererInterface
@@ -20,6 +20,6 @@ use Chronolog\LogRecord;
  */
 interface RendererInterface
 {
-    public function render(LogRecord $record):mixed;
+    public function render(LogEntity $record):mixed;
 }
 /** End of RendererInterface **/

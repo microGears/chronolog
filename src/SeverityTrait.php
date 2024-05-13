@@ -23,7 +23,7 @@ trait SeverityTrait
     /** @var array|Severity */
     protected mixed $severity;
 
-    public function isAllowedSeverity(LogRecord $record): bool
+    public function isAllowedSeverity(LogEntity $record): bool
     {
         /** Inclusion strategy */
         if ($this->severity instanceof Severity) {

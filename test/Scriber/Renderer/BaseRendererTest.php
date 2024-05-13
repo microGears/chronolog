@@ -12,11 +12,12 @@
 namespace Chronolog\Test\Scriber\Renderer;
 
 use Chronolog\DateTimeStatement;
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 use Chronolog\Scriber\Renderer\BaseRenderer;
 use Chronolog\Severity;
+use PHPUnit\Event\RuntimeException;
 use PHPUnit\Framework\TestCase;
-
+use DateTimeImmutable;
 /**
  * BaseRendererTest
  *
@@ -29,7 +30,7 @@ class BaseRendererTest extends TestCase
     {
         $render = new BaseRenderer(['format' => 'Y/m/d']);
         $result = $render->render(
-            new LogRecord(
+            new LogEntity(
                 new DateTimeStatement('Y.m.d'),
                 Severity::Debug,
                 "simple message text",
@@ -48,7 +49,7 @@ class BaseRendererTest extends TestCase
                     "var_obj_4" => new TestClassStringableTwo('ClassTwo'),
                     "var_array_1" => [1, 2, 3, 4, 5, 6, 7],
                     "var_array_2" => ['key_1' => 1, 'key_2' => 2],
-                    "var_date" => new \DateTime()
+                    "var_date" => new \DateTime(),
                 ]
             )
         );
@@ -67,12 +68,12 @@ class BaseRendererTest extends TestCase
                 'var_inf_1' => 'INF',
                 'var_inf_2' => '-INF',
                 'var_string' => 'string',
-                'var_res' => '[resource(stream)]',
+                'var_res' => '0',
                 'var_null' => NULL,
-                'var_obj_1' => ['Chronolog\\Test\\Scriber\\Renderer\\TestClassOne' => ['property' => 'value']],
-                'var_obj_2' => ['Chronolog\\Test\\Scriber\\Renderer\\TestClassDecorator' => ['parent' => ['Chronolog\\Test\\Scriber\\Renderer\\TestClassOne' => ['property' => 'value']], 'items' => []]],
-                'var_obj_3' => ['Chronolog\\Test\\Scriber\\Renderer\\TestClassStringableOne' => 'ClassOne'],
-                'var_obj_4' => ['Chronolog\\Test\\Scriber\\Renderer\\TestClassStringableTwo' => 'ClassTwo'],
+                'var_obj_1' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassOne','property' => 'value'],
+                'var_obj_2' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassDecorator','parent' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassOne','property' => 'value'], 'items' => []],
+                'var_obj_3' => 'ClassOne',
+                'var_obj_4' => 'ClassTwo',
                 'var_array_1' => [0 => 1, 1 => 2, 2 => 3, 3 => 4, 4 => 5, 5 => 6, 6 => 7],
                 'var_array_2' => ['key_1' => 1, 'key_2' => 2],
                 'var_date' => date('Y/m/d')

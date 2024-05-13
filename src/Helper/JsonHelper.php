@@ -20,23 +20,14 @@ class JsonHelper
         return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
     }
 
-    public static function encode($data, ?int $encodeFlags = null, bool $ignoreErrors = false): string
+    public static function encode($data, ?int $encode_flags = null): string
     {
-        if (null === $encodeFlags) {
-            $encodeFlags = self::DEFAULT_JSON_FLAGS;
+        if ($encode_flags === null) {
+            $encode_flags = self::DEFAULT_JSON_FLAGS;
         }
 
-        if ($ignoreErrors) {
-            $json = @json_encode($data, $encodeFlags);
-            if (false === $json) {
-                return 'null';
-            }
-
-            return $json;
-        }
-
-        $json = json_encode($data, $encodeFlags);
-        if (false === $json) {
+        $json = json_encode($data, $encode_flags);
+        if ($json === false) {
             self::throwEncodeError(json_last_error(), $data);
         }
 
@@ -45,7 +36,7 @@ class JsonHelper
 
     private static function throwEncodeError(int $code, $data): never
     {
-        $msg = match ($code) {
+        $message = match ($code) {
             JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
             JSON_ERROR_STATE_MISMATCH => 'Occurs with underflow or with the modes mismatch',
             JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
@@ -57,7 +48,7 @@ class JsonHelper
             default => 'Unknown error',
         };
 
-        throw new \RuntimeException('JSON encoding failed: ' . $msg . '. Encoding: ' . var_export($data, true));
+        throw new \RuntimeException('JSON encoding failed: ' . $message);
     }
 }
 

@@ -12,7 +12,7 @@
 
 namespace Chronolog\Scriber;
 
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 use Chronolog\Scriber\ScriberAbstract;
 
 /**
@@ -23,7 +23,7 @@ use Chronolog\Scriber\ScriberAbstract;
  */
 class SysLogScriber extends ScriberAbstract
 {
-    public function handle(LogRecord $record): bool
+    public function handle(LogEntity $record): bool
     {
         return true;
     }

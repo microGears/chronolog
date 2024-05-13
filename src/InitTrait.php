@@ -7,6 +7,7 @@
 
 namespace Chronolog;
 
+use Chronolog\Helper\StringHelper;
 
 trait InitTrait
 {
@@ -22,13 +23,13 @@ trait InitTrait
                     continue;
                 }
 
-                if (method_exists( $context, $method = 'set'.Utilits::normalizeName( $key ) )) {
+                if (method_exists( $context, $method = 'set'.StringHelper::normalizeName( $key ) )) {
                     call_user_func( [$context, $method], $val );
                 }
                 else {
                     
                     if(strpos( phpversion(), '8.2' ) === 0 && !property_exists($context, $key)){
-                        throw new \Exception( sprintf( 'Class  "%s" does not have the "%s" property, dynamic creation of properties is not supported since version 8.2', Utilits::className($context,false), $key ) );
+                        throw new \Exception( sprintf( 'Class  "%s" does not have the "%s" property, dynamic creation of properties is not supported since version 8.2', StringHelper::className($context,false), $key ) );
                     }
 
                     $context->{$key} = $val;

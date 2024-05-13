@@ -15,7 +15,7 @@ namespace Chronolog\Extender;
 
 use Chronolog\AutoInitialized;
 use Chronolog\Extender\ExtenderInterface;
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * ExtenderAbstract
@@ -25,6 +25,6 @@ use Chronolog\LogRecord;
  */
 abstract class ExtenderAbstract extends AutoInitialized implements ExtenderInterface
 {
-    abstract public function __invoke(LogRecord $record): LogRecord;
+    abstract public function __invoke(LogEntity $record): LogEntity;
 }
 /** End of ExtenderAbstract **/

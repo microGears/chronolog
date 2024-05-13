@@ -44,7 +44,8 @@ Thumbs.db
 *.mov
 *.wmv
 
-
+runtime/
+logs/
 log
 log-*.php
 *.ini
@@ -52,6 +53,7 @@ composer.lock
 
 # PHPUnit
 .phpunit.*
+*.cache
 phpunit.xml
 
 # Vendors

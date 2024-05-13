@@ -11,24 +11,19 @@
 
 namespace Chronolog\Helper;
 
-
-/**
- * Class StringHelper
- * 
- */
 class StringHelper
 {
-    public static function isSerialized($str)
+    public static function isSerializable(mixed $data): bool
     {
-        return $str === 'b:0;' || @unserialize($str) !== false;
+        return @unserialize(serialize($data), ['allowed_classes' => true]) !== false;
     }
 
-    function isAscii($str)
+    public static function isAscii(string $str): bool
     {
         return (bool)!preg_match('/[\x80-\xFF]/', $str);
     }
 
-    public static function clearInvisibleChars(string $str, bool $url_encoded = true)
+    public static function clearInvisibleChars(string $str, bool $url_encoded = true): string
     {
         $non_displayables = [];
 
@@ -45,45 +40,55 @@ class StringHelper
         do {
             $str = preg_replace($non_displayables, '', $str, -1, $count);
             if (null === $str) {
-                self::throwPcreError(preg_last_error());
+                self::throwPregError(preg_last_error());
             }
         } while ($count);
 
         return $str;
     }
 
-    public static function clearNewlines(string $str, bool $line_breaks = false): string
+    public static function clearCRLF(string $str): string
     {
-        if ($line_breaks === true) {
-            if (0 === strpos($str, '{') || 0 === strpos($str, '[')) {
-                $str = preg_replace('/(?<!\\\\)\\\\[rn]/', "\n", $str);
-                if (null === $str) {
-                    self::throwPcreError(preg_last_error());
-                }
-            }
-            return $str;
-        }
-
         return str_replace(["\r\n", "\r", "\n"], ' ', $str);
+        // return preg_replace('/(?<!\\\\)\\\\[rn]/', " ", $str);
     }
 
-    public static function throwPcreError(int $code): string
+    public static function className(mixed $class, bool $basename = false): string
     {
-        $msg = 'Unknown error';
+        $parts = explode('\\', is_object($class) ? get_class($class) : $class);
+        if ($basename) {
+            $className = array_pop($parts);
+        } else
+            $className = implode('\\', $parts);
+
+
+        return $className;
+    }
+
+    public static function normalizeName(string $name):string
+    {
+        return strtolower(strtr($name, ['-' => '', '_' => '', ' ' => '', '\\' => '', '/' => '']));
+    }
+
+    public static function throwPregError(int $code): string
+    {
+        $message = 'Unknown error';
 
         if (PHP_VERSION_ID >= 80000) {
-            $msg = preg_last_error_msg();
+            $message = preg_last_error_msg();
         } else {
             $constants = (get_defined_constants(true))['pcre'];
             $constants = array_filter($constants, function ($key) {
                 return substr($key, -6) == '_ERROR';
             }, ARRAY_FILTER_USE_KEY);
-
             $constants = array_flip($constants);
-            $msg = $constants[$code] ?? 'Unknown error';
+
+            if (isset($constants[$code])) {
+                $message = $constants[$code];
+            }
         }
 
-        throw new \RuntimeException('Failed to run preg_replace: ' . $code . ' / ' . $msg);
+        throw new \RuntimeException('Replacement failed: ' . $message);
     }
 }
 

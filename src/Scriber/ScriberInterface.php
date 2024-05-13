@@ -13,7 +13,7 @@
 
 namespace Chronolog\Scriber;
 
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * ScriberInterface
@@ -23,6 +23,12 @@ use Chronolog\LogRecord;
  */
 interface ScriberInterface
 {
-   public function handle(LogRecord $record): bool;
+   /**
+    * Handles a log entity.
+    *
+    * @param LogEntity $entity The log entity to handle.
+    * @return bool Returns true if the log object was processed successfully and needs to abort next processing, false otherwise.
+    */
+   public function handle(LogEntity $entity): bool;
 }
 /** End of ScriberInterface **/

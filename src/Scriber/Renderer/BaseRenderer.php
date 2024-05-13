@@ -12,10 +12,13 @@
 
 namespace Chronolog\Scriber\Renderer;
 
+use Chronolog\Helper\PathHelper;
 use Chronolog\Helper\StringHelper;
-use Chronolog\LogRecord;
-
+use Chronolog\LogEntity;
+use Chronolog\Utilits;
 use DateTimeImmutable;
+use Stringable;
+use Throwable;
 
 /**
  * BaseRenderer
@@ -26,35 +29,28 @@ use DateTimeImmutable;
 class BaseRenderer extends RendererAbstract
 {
     public const FORMAT = "Y-m-d\TH:i:sP";
-
-    /**
-     * Flag to remove(or not) HTML/PHP tags when normalizing strings values
-     *
-     * @var boolean Simple
-     */
-    protected bool $strip_tags = false;
-
     /**
      * DateTime format
      *
      * @var string Simple
      */
-    protected string $format;
+    protected ?string $format = null;
+    protected bool $allow_stringify = true;
+    protected ?string $base_path = null;
 
-
-    public function render(LogRecord $record): mixed
+    public function render(LogEntity $record): mixed
     {
         $clone = $record->fork();
         if ($this->getFormat() != $clone->datetime->getFormat()) {
             $clone->datetime->setFormat($this->getFormat());
         }
 
-        return $this->normalizeArray($clone->toArray(), $this->strip_tags);
+        return $this->formalizeArray($clone->toArray());
     }
 
-    protected function normalizeArray($array, $strip_tags = false)
+    public function formalizeArray(array $array): array
     {
-        $normalizedArray = [];
+        $result = [];
 
         foreach ($array as $key => $value) {
             if (is_scalar($value) || $value === null) {
@@ -66,66 +62,73 @@ class BaseRenderer extends RendererAbstract
                     } else if (is_nan($value)) {
                         $value = 'NaN';
                     }
-                } else {
-                    if (is_string($value)) {
-                        if ($strip_tags)
-                            $value = strip_tags($value);
-                        $value = StringHelper::clearInvisibleChars($value, false);
-                    }
-                }
+                } 
 
-                $normalizedArray[$key] = $value;
+                $result[$key] = $value;
+
             } else if (is_array($value)) {
-                $normalizedArray[$key] = $this->normalizeArray($value, $strip_tags);
+                $result[$key] = $this->formalizeArray($value);
             } else if ($value instanceof \DateTimeInterface) {
                 if ($value instanceof DateTimeImmutable) {
                     $value = (string) $value;
                 } else
                     $value = $value->format($this->getFormat());
-                $normalizedArray[$key] = $value;
+                $result[$key] = $value;
             } else if (is_object($value)) {
-                $className = get_class($value);
-
-                if ($value instanceof \Stringable) {
-                    $value = $value->__toString();
-                } else
-                    $value = $this->normalizeArray(get_object_vars($value), $strip_tags);
-
-                $normalizedArray[$key] = [$className => $value];
+                $result[$key] = $this->formalizeObject($value);
             } else if (is_resource($value)) {
-                $normalizedArray[$key] = sprintf('[resource(%s)]', get_resource_type($value));
+                /** type `resource` isn't supported by serialization */
+                $result[$key] = 0;
             } else {
-                $normalizedArray[$key] = '[unknown(' . gettype($value) . ')]';
+                $result[$key] = '[unknown(' . gettype($value) . ')]';
             }
         }
 
-        return $normalizedArray;
+        return $result;
     }
 
-    /**
-     * Get simple
-     *
-     * @return  boolean
-     */
-    public function getStripTags(): bool
+    public function formalizeObject(object $object): mixed
     {
-        return $this->strip_tags;
+        $result = [];
+        if (is_object($object)) {
+            if ($object instanceof Throwable) {
+                return $this->formalizeException($object);
+            }
+
+            if ($this->allow_stringify == true && $object instanceof Stringable) {
+                return $object->__toString();
+            }
+
+            $result = $this->formalizeArray(get_object_vars($object));
+            $result['class'] = get_class($object);
+
+            ksort($result);
+        }
+        return $result;
     }
 
-    /**
-     * Set simple
-     *
-     * @param  boolean  $strip_tags  Simple
-     *
-     * @return  self
-     */
-    public function setStripTags(bool $strip_tags): self
+    public function formalizeException(Throwable $thr): mixed
     {
-        $this->strip_tags = $strip_tags;
+        $result = [
+            'class' => get_class($thr),
+            'message' => $thr->getMessage(),
+            'code' => (int) $thr->getCode(),
+            'file' => PathHelper::overlapPath($thr->getFile(),$this->base_path) . ':' . $thr->getLine(),
+        ];
 
-        return $this;
+        $trace = $thr->getTrace();
+        foreach ($trace as $frame) {
+            if (isset($frame['file'], $frame['line'])) {
+                $result['trace'][] = $frame['file'] . ':' . $frame['line'];
+            }
+        }
+
+        if (($previous = $thr->getPrevious()) instanceof Throwable) {
+            $result['previous'] = $this->formalizeException($previous);
+        }
+
+        return $result;
     }
-
 
     /**
      * Get simple

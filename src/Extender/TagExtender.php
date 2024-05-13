@@ -14,7 +14,7 @@
 namespace Chronolog\Extender;
 
 use Chronolog\Extender\ExtenderAbstract;
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * TagExtender
@@ -26,7 +26,7 @@ class TagExtender extends ExtenderAbstract
 {
     private array $tags;
 
-    public function __invoke(LogRecord $record): LogRecord
+    public function __invoke(LogEntity $record): LogEntity
     {
         $record->assets['tags'] = $this->tags;
         return $record;

@@ -12,7 +12,7 @@
 namespace Chronolog\Scriber\Renderer;
 
 use Chronolog\AutoInitialized;
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * RendererAbstract
@@ -22,6 +22,6 @@ use Chronolog\LogRecord;
  */
 abstract class RendererAbstract extends AutoInitialized implements RendererInterface
 {
-    abstract public function render(LogRecord $record): mixed;    
+    abstract public function render(LogEntity $record): mixed;    
 }
 /** End of RendererAbstract **/

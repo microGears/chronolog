@@ -11,7 +11,7 @@
 
 namespace Chronolog\Extender;
 
-use Chronolog\LogRecord;
+use Chronolog\LogEntity;
 
 /**
  * ExtenderInterface
@@ -21,6 +21,6 @@ use Chronolog\LogRecord;
  */
 interface ExtenderInterface
 {
-    public function __invoke(LogRecord $record):LogRecord;
+    public function __invoke(LogEntity $record):LogEntity;
 }
 /** End of ExtenderInterface **/
