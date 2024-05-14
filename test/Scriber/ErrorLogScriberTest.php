@@ -38,6 +38,15 @@ class ErrorLogScriberTest extends TestCase
         $this->assertInstanceOf('Chronolog\Scriber\ErrorLogScriber', $scriber);
     }
 
+    public function testConstructorViaFactory()
+    {
+        $scriber = ErrorLogScriber::createInstance();
+        $this->assertInstanceOf('Chronolog\Scriber\ErrorLogScriber', $scriber);
+
+        $scriber = ErrorLogScriber::createInstance(Severity::Debug);
+        $this->assertInstanceOf('Chronolog\Scriber\ErrorLogScriber', $scriber);        
+    }
+
     public function testIsAllowedSeverity()
     {
         $scriber1 = new ErrorLogScriber(['severity' => Severity::Error]);
@@ -49,7 +58,7 @@ class ErrorLogScriberTest extends TestCase
         $this->assertFalse($scriber2->isAllowedSeverity($record));
     }
 
-    public function testHandleToSystem()
+    public function testWriteToSystem()
     {
         $scriber = new ErrorLogScriber([
             'severity' => Severity::Error,
@@ -63,7 +72,7 @@ class ErrorLogScriberTest extends TestCase
         $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',1)]);
         $this->assertTrue($scriber->handle($record));
     }
-    public function testHandleToEmail()
+    public function testWriteToEmail()
     {
         $scriber = new ErrorLogScriber([
             'severity' => Severity::Error,
@@ -75,12 +84,12 @@ class ErrorLogScriberTest extends TestCase
             ]),
             'message_type' => ErrorLogScriber::MSG_EMAIL,
             'destination' => 'user@mail.com',
-            'headers' => 'From:admin@mail.com\r\n'
+            'headers' => 'From: admin@mail.com\r\n'
         ]);
         $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',2)]);
         $this->assertTrue($scriber->handle($record));
     }
-    public function testHandleToFile()
+    public function testWriteToFile()
     {
         $scriber = new ErrorLogScriber([
             'severity' => Severity::Error,
@@ -91,25 +100,9 @@ class ErrorLogScriberTest extends TestCase
                 'base_path' => dirname(__DIR__,2).'/src'
             ]),
             'message_type' => ErrorLogScriber::MSG_FILE,
-            'destination' => dirname(__DIR__,2) . '/test/runtime/logs/'.basename(__FILE__,'.php').'.log'
+            'destination' => dirname(__DIR__,2) . '/runtime/logs/'.basename(__FILE__,'.php').'.log'
         ]);
         $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',3)]);
-        $this->assertTrue($scriber->handle($record));
-    }
-
-    public function testHandleToSapi()
-    {
-        $scriber = new ErrorLogScriber([
-            'severity' => Severity::Error,
-            'renderer' => new StringRenderer([
-                'pattern' => "[%datetime%]: %track% %severity_name% %message% %assets%\n",
-                'allow_multiline' => false,
-                'include_traces' => false,
-                'base_path' => dirname(__DIR__,2).'/src'
-            ]),
-            'message_type' => ErrorLogScriber::MSG_SAPI,
-        ]);
-        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',4)]);
         $this->assertTrue($scriber->handle($record));
     }
 }

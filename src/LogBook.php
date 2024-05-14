@@ -12,6 +12,7 @@
 namespace Chronolog;
 
 use Chronolog\Extender\ExtenderInterface;
+use Chronolog\Helper\ArrayHelper;
 use Chronolog\Helper\StringHelper;
 use Chronolog\Scriber\ScriberAbstract;
 use Chronolog\Scriber\ScriberInterface;
@@ -52,7 +53,7 @@ class LogBook extends AutoInitialized
     {
         foreach ($scribes as $scribe) {
             if (is_array($scribe)) {
-                $scribe = static::createInstance($scribe);
+                $scribe = ArrayHelper::arrayToInstance($scribe);
             }
 
             if (!$scribe instanceof ScriberInterface) {
@@ -84,7 +85,7 @@ class LogBook extends AutoInitialized
     {
         foreach ($extenders as $extender) {
             if (is_array($extender)) {
-                $extender = static::createInstance($extender);
+                $extender = ArrayHelper::arrayToInstance($extender);
             }
 
             if (!$extender instanceof ExtenderInterface) {

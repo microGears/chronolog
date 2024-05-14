@@ -15,6 +15,7 @@ namespace Chronolog\Test\Scriber;
 
 use Chronolog\DateTimeStatement;
 use Chronolog\LogEntity;
+use Chronolog\Scriber\Renderer\StringRenderer;
 use Chronolog\Severity;
 use Chronolog\Scriber\SysLogScriber;
 use PHPUnit\Framework\TestCase;
@@ -27,11 +28,21 @@ use PHPUnit\Framework\TestCase;
  */
 class SysLogScriberTest extends TestCase
 {
-    public function testConstructor(){
+    public function testConstructor()
+    {
         $scriber = new SysLogScriber();
         $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
 
         $scriber = new SysLogScriber(['severity' => Severity::Debug]);
+        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+    }
+
+    public function testConstructorViaFactory()
+    {
+        $scriber = SysLogScriber::createInstance('syslog');
+        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+
+        $scriber = SysLogScriber::createInstance('syslog', severity: Severity::Info);
         $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
     }
 
@@ -41,9 +52,27 @@ class SysLogScriberTest extends TestCase
         $scriber2 = new SysLogScriber(['severity' => [Severity::Debug, Severity::Info]]);
 
         $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test");
-        
+
         $this->assertTrue($scriber1->isAllowedSeverity($record));
         $this->assertFalse($scriber2->isAllowedSeverity($record));
+    }
+
+    public function testWrite()
+    {
+        $scriber = new SysLogScriber([
+            'prefix' => 'syslog',
+            'facility' => LOG_USER,
+            'flags' => LOG_CONS,
+            'severity' => Severity::Info,
+            'renderer' => new StringRenderer([
+                'pattern' => "%severity_name%: %message% %assets%",
+                'allow_multiline' => false,
+                'include_traces' => false,
+                'base_path' => dirname(__DIR__, 2) . '/src'
+            ])
+        ]);
+        $record = new LogEntity(new DateTimeStatement(), Severity::Info, "Simple info message", "test");
+        $this->assertTrue($scriber->handle($record));
     }
 }
 /** End of SysLogScriberTest **/

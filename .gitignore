@@ -44,17 +44,17 @@ Thumbs.db
 *.mov
 *.wmv
 
-runtime/
-logs/
-log
-log-*.php
+runtime/*.*
+
+logs/*.*
+
 *.ini
 composer.lock
 
 # PHPUnit
-.phpunit.*
-*.cache
-phpunit.xml
+.phpunit.result.cache
 
 # Vendors
 vendor
+.phpunit.result.cache
+*.cache

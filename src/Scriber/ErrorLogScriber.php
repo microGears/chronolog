@@ -14,6 +14,7 @@ namespace Chronolog\Scriber;
 use Chronolog\LogEntity;
 use Chronolog\Scriber\Renderer\RendererInterface;
 use Chronolog\Scriber\Renderer\StringRenderer;
+use Chronolog\Severity;
 use RuntimeException;
 
 /**
@@ -84,7 +85,7 @@ class ErrorLogScriber extends ScriberAbstract
      *
      * @return  self
      */
-    public function setDestination($destination): self
+    public function setDestination(string|null $destination): self
     {
         $this->destination = $destination;
         return $this;
@@ -103,11 +104,26 @@ class ErrorLogScriber extends ScriberAbstract
      *
      * @return  self
      */
-    public function setHeaders($headers): self
+    public function setHeaders(string|null $headers): self
     {
         $this->headers = $headers;
 
         return $this;
+    }
+
+    public static function createInstance(Severity $severity = Severity::Debug, int $message_type = self::MSG_SYSTEM, ?string $destination = null, ?string $headers = null): self
+    {
+        return new ErrorLogScriber([
+            'severity' => $severity,
+            'renderer' => new StringRenderer([
+                'pattern' => "%severity_name% %track%: %message% %assets%\n",
+                'allow_multiline' => true,
+                'include_traces' => true,
+            ]),
+            'message_type' => $message_type,
+            'destination' => $destination,
+            'headers'=> $headers
+        ]);
     }
 }
 

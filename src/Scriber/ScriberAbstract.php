@@ -13,6 +13,7 @@
 namespace Chronolog\Scriber;
 
 use Chronolog\AutoInitialized;
+use Chronolog\Helper\ArrayHelper;
 use Chronolog\Helper\StringHelper;
 use Chronolog\LogEntity;
 use Chronolog\Scriber\Renderer\BaseRenderer;
@@ -32,7 +33,7 @@ abstract class ScriberAbstract extends AutoInitialized implements ScriberInterfa
     use SeverityTrait;
 
     protected ?RendererInterface $renderer = null;
-
+    
     /**
      * Get the value of renderer
      */
@@ -54,7 +55,7 @@ abstract class ScriberAbstract extends AutoInitialized implements ScriberInterfa
     public function setRenderer(RendererInterface|array $renderer): self
     {
         if (is_array($renderer)) {
-            $renderer = static::createInstance($renderer);
+            $renderer = ArrayHelper::arrayToInstance($renderer);
         }
         $this->renderer = $renderer;
 
