@@ -32,7 +32,17 @@ abstract class ScriberAbstract extends AutoInitialized implements ScriberInterfa
 {
     use SeverityTrait;
 
+    /**
+     * @var RendererInterface|null $renderer The renderer used by the ScriberAbstract class.
+     */
     protected ?RendererInterface $renderer = null;
+
+    /**
+     * Indicates whether the Scriber is collaborative or not.
+     *
+     * @var bool $collaborative
+     */
+    protected bool $collaborative = false;
     
     /**
      * Get the value of renderer
@@ -70,6 +80,26 @@ abstract class ScriberAbstract extends AutoInitialized implements ScriberInterfa
     public function getDefaultRenderer(): RendererInterface
     {
         return new BaseRenderer();
+    }
+
+    /**
+     * Get the value of collaborative
+     */ 
+    public function getCollaborative():bool
+    {
+        return $this->collaborative;
+    }
+
+    /**
+     * Set the value of collaborative
+     *
+     * @return  self
+     */ 
+    public function setCollaborative(bool $collaborative):self
+    {
+        $this->collaborative = $collaborative;
+
+        return $this;
     }
 }
 /** End of ScriberAbstract **/

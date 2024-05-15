@@ -18,7 +18,7 @@ use Chronolog\LogEntity;
 use Chronolog\Scriber\ErrorLogScriber;
 use Chronolog\Scriber\Renderer\StringRenderer;
 use Chronolog\Severity;
-use Chronolog\Scriber\SysLogScriber;
+use Chronolog\Scriber\SyslogScriber;
 use PHPUnit\Framework\TestCase;
 
 /**

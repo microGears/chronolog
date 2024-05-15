@@ -43,12 +43,18 @@ class ErrorLogScriber extends ScriberAbstract
      */
     public function handle(LogEntity $entity): bool
     {
-        return error_log(
+        $result = error_log(
             $this->getRenderer()->render($entity),
             $this->getMessageType(),
             $this->getDestination(),
             $this->getHeaders(),
         );
+
+        if ($this->getCollaborative()) {
+            return false;
+        }
+        
+        return $result;
     }
 
     public function getDefaultRenderer(): RendererInterface
@@ -122,7 +128,7 @@ class ErrorLogScriber extends ScriberAbstract
             ]),
             'message_type' => $message_type,
             'destination' => $destination,
-            'headers'=> $headers
+            'headers' => $headers
         ]);
     }
 }

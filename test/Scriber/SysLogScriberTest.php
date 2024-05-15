@@ -15,41 +15,41 @@ namespace Chronolog\Test\Scriber;
 
 use Chronolog\DateTimeStatement;
 use Chronolog\LogEntity;
+use Chronolog\Scriber\SyslogScriber;
 use Chronolog\Scriber\Renderer\StringRenderer;
 use Chronolog\Severity;
-use Chronolog\Scriber\SysLogScriber;
 use PHPUnit\Framework\TestCase;
 
 /**
- * SysLogScriberTest
+ * SyslogScriberTest
  *
  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
  * @datetime 07.05.2024 14:26:15
  */
-class SysLogScriberTest extends TestCase
+class SyslogScriberTest extends TestCase
 {
     public function testConstructor()
     {
-        $scriber = new SysLogScriber();
-        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+        $scriber = new SyslogScriber();
+        $this->assertInstanceOf('Chronolog\Scriber\SyslogScriber', $scriber);
 
-        $scriber = new SysLogScriber(['severity' => Severity::Debug]);
-        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+        $scriber = new SyslogScriber(['severity' => Severity::Debug]);
+        $this->assertInstanceOf('Chronolog\Scriber\SyslogScriber', $scriber);
     }
 
     public function testConstructorViaFactory()
     {
-        $scriber = SysLogScriber::createInstance('syslog');
-        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+        $scriber = SyslogScriber::createInstance('syslog');
+        $this->assertInstanceOf('Chronolog\Scriber\SyslogScriber', $scriber);
 
-        $scriber = SysLogScriber::createInstance('syslog', severity: Severity::Info);
-        $this->assertInstanceOf('Chronolog\Scriber\SysLogScriber', $scriber);
+        $scriber = SyslogScriber::createInstance('syslog', severity: Severity::Info);
+        $this->assertInstanceOf('Chronolog\Scriber\SyslogScriber', $scriber);
     }
 
     public function testIsAllowedSeverity()
     {
-        $scriber1 = new SysLogScriber(['severity' => Severity::Error]);
-        $scriber2 = new SysLogScriber(['severity' => [Severity::Debug, Severity::Info]]);
+        $scriber1 = new SyslogScriber(['severity' => Severity::Error]);
+        $scriber2 = new SyslogScriber(['severity' => [Severity::Debug, Severity::Info]]);
 
         $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test");
 
@@ -59,7 +59,7 @@ class SysLogScriberTest extends TestCase
 
     public function testWrite()
     {
-        $scriber = new SysLogScriber([
+        $scriber = new SyslogScriber([
             'prefix' => 'syslog',
             'facility' => LOG_USER,
             'flags' => LOG_CONS,
@@ -75,4 +75,4 @@ class SysLogScriberTest extends TestCase
         $this->assertTrue($scriber->handle($record));
     }
 }
-/** End of SysLogScriberTest **/
+/** End of SyslogScriberTest **/

@@ -20,12 +20,12 @@ use Chronolog\Severity;
 use RuntimeException;
 
 /**
- * SysLogScriber
+ * SyslogScriber
  *
  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
  * @datetime 07.05.2024 14:23:38
  */
-class SysLogScriber extends ScriberAbstract
+class SyslogScriber extends ScriberAbstract
 {
     const FACILITIES = [
         LOG_AUTH,
@@ -69,7 +69,10 @@ class SysLogScriber extends ScriberAbstract
         openlog($this->prefix, $this->flags, $this->facility);
         syslog($record->severity->value, $this->getRenderer()->render($record));
 
-        // syslog always returns true
+        if ($this->getCollaborative()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -142,4 +145,4 @@ class SysLogScriber extends ScriberAbstract
         ]);
     }
 }
-/** End of SysLogScriber **/
+/** End of SyslogScriber **/
