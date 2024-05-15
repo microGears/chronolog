@@ -21,6 +21,6 @@ use Chronolog\LogEntity;
  */
 interface ExtenderInterface
 {
-    public function __invoke(LogEntity $record):LogEntity;
+    public function __invoke(LogEntity $entity):LogEntity;
 }
 /** End of ExtenderInterface **/

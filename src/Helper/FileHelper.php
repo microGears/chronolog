@@ -13,6 +13,7 @@ namespace Chronolog\Helper;
 
 use Avant\Base\Constants;
 use finfo;
+use RuntimeException;
 
 /**
  * Class FileHelper
@@ -36,6 +37,12 @@ class FileHelper
     const FOPEN_WRITE_CREATE_STRICT           = 'xb';
     const FOPEN_READ_WRITE_CREATE_STRICT      = 'x+b';
 
+    /**
+     * Deletes a file.
+     *
+     * @param string $filename The path to the file to be deleted.
+     * @return bool True if the file was successfully deleted, false otherwise.
+     */
     public static function deleteFile(string $filename)
     {
         $result = false;
@@ -47,6 +54,14 @@ class FileHelper
         return $result;
     }
 
+    /**
+     * Deletes files and optionally directories recursively from the specified path.
+     *
+     * @param string $path The path to the directory where the files should be deleted.
+     * @param bool $del_dir Whether to delete the directories as well. Default is false.
+     * @param int $level The recursion level. Default is 0 (no recursion).
+     * @return bool Returns true if the files were successfully deleted, false otherwise.
+     */
     public static function deleteFiles(string $path, bool $del_dir = false, int $level = 0): bool
     {
         // Trim the trailing slash
@@ -77,6 +92,14 @@ class FileHelper
         return true;
     }
 
+    /**
+     * Retrieves the directories within a given source directory.
+     *
+     * @param string $source_dir The source directory to retrieve directories from.
+     * @param bool $onlyTop (optional) Whether to only retrieve directories from the top level of the source directory. Default is true.
+     * @param bool $recursion (optional) Whether to retrieve directories recursively. Default is false.
+     * @return mixed An array of directories if successful, false otherwise.
+     */
     public static function getDir(string $source_dir, bool $onlyTop = true, bool $recursion = false): mixed
     {
         static $filedata;
@@ -105,6 +128,12 @@ class FileHelper
         }
     }
 
+    /**
+     * Returns the file extension of the given file.
+     *
+     * @param string $file The file path or name.
+     * @return string The file extension.
+     */
     public static function getFileExtension(string $file): string
     {
         $parts = explode('.', $file);
@@ -112,6 +141,13 @@ class FileHelper
         return end($parts);
     }
 
+    /**
+     * Retrieves information about a file.
+     *
+     * @param string $file The path to the file.
+     * @param array $returned_values The values to be returned. Default is ['name', 'path', 'size', 'type'].
+     * @return array|bool An array containing the requested file information, or false if the file does not exist.
+     */
     public static function getFileInfo(string $file, array $returned_values = ['name', 'path', 'size', 'type']): array|bool
     {
         $result = [];
@@ -160,6 +196,12 @@ class FileHelper
         return $result;
     }
 
+    /**
+     * Returns the file type of the given filename.
+     *
+     * @param string $filename The name of the file.
+     * @return string The file type.
+     */
     public static function getFileType(string $filename): string
     {
         if (function_exists('finfo_file')) {
@@ -193,6 +235,14 @@ class FileHelper
         return 'application/octet-stream';
     }
 
+    /**
+     * Retrieves a list of files from a specified directory.
+     *
+     * @param string $source_dir The directory path to retrieve files from.
+     * @param bool $include_path (Optional) Whether to include the full path of each file in the result. Default is false.
+     * @param bool $recursion (Optional) Whether to search for files recursively in subdirectories. Default is false.
+     * @return array|bool An array of file paths if successful, or false if the directory does not exist or is not readable.
+     */
     public static function getFiles(string $source_dir, bool $include_path = false, bool $recursion = false): array|bool
     {
         static $result = [];
@@ -218,6 +268,15 @@ class FileHelper
         }
     }
 
+    /**
+     * Checks if a file is really writable.
+     *
+     * This method checks if the specified file is writable by verifying both the file's write permission 
+     * and the write permission of its parent directory.
+     *
+     * @param string $file The path to the file.
+     * @return bool Returns true if the file is really writable, false otherwise.
+     */
     public static function isReallyWritable(string $file): bool
     {
         // If we're on a Unix server with safe_mode off we call is_writable
@@ -248,11 +307,23 @@ class FileHelper
         return true;
     }
 
+    /**
+     * Converts octal permissions to a human-readable format.
+     *
+     * @param int $perms The octal permissions to convert.
+     * @return string The human-readable format of the permissions.
+     */
     public static function octalPermissions($perms)
     {
         return substr(sprintf('%o', $perms), -3);
     }
 
+    /**
+     * Prepares a filename by performing necessary modifications.
+     *
+     * @param string $filename The original filename.
+     * @return string The modified filename.
+     */
     public static function prepFilename(string $filename):string
     {
         $path_prefix = (substr($filename, 0, 1) == '/') ? '/' : '';
@@ -263,11 +334,26 @@ class FileHelper
         return self::prepLocation($file_normalize);
     }
 
+    /**
+     * Prepares the given location string.
+     *
+     * @param string $location The location string to be prepared.
+     * @return string The prepared location string.
+     */
     public static function prepLocation(string $location): string
     {
         return str_replace(['\\', '//'], '/', $location);
     }
 
+    /**
+     * Prepares a file path.
+     *
+     * This method takes a file path as input and prepares it for further processing.
+     *
+     * @param string $path The file path to be prepared.
+     * @param bool $normalize Whether to normalize the file path. Defaults to true.
+     * @return string The prepared file path.
+     */
     public static function prepPath(string $path, bool $normalize = true):string
     {
         if (function_exists('realpath') && $normalize) {
@@ -276,6 +362,12 @@ class FileHelper
         return rtrim(self::prepLocation($path), '/') . '/';
     }
 
+    /**
+     * Reads the contents of a file.
+     *
+     * @param string $file The path to the file to be read.
+     * @return bool|string The contents of the file as a string, or false if the file cannot be read.
+     */
     public static function readFile(string $file):bool|string
     {
         if (!file_exists($file)) {
@@ -303,6 +395,12 @@ class FileHelper
         return $data;
     }
 
+    /**
+     * Converts numeric file permissions to symbolic format.
+     *
+     * @param mixed $perms The numeric file permissions to convert.
+     * @return string The symbolic representation of the file permissions.
+     */
     public static function symbolicPermissions(mixed $perms):string
     {
         if (($perms & 0xC000) == 0xC000) {
@@ -341,25 +439,52 @@ class FileHelper
         return $symbolic;
     }
 
-    public static function writeFile(string $path, mixed $data, string $mode = self::FOPEN_WRITE_CREATE_DESTRUCTIVE)
+    /**
+     * Writes data to a file.
+     *
+     * @param string $file The path to the file.
+     * @param mixed $data The data to be written to the file.
+     * @param string $mode The mode in which the file should be opened. Default is self::FOPEN_WRITE_CREATE_DESTRUCTIVE.
+     * @return bool Returns true on success, false on failure.
+     */
+    public static function writeFile(string $file, mixed $data, string $mode = self::FOPEN_WRITE_CREATE_DESTRUCTIVE):bool
     {
-
-        if (!is_dir($dir = dirname($path))) {
+        if (!is_dir($dir = dirname($file))) {
             if (@mkdir($dir, self::DIR_WRITE_MODE, true) == false) {
-                return false;
+                throw new RuntimeException(sprintf('%s: failed to create dir "%s"', __METHOD__, $dir));
             }
         }
 
-        if (!$fp = @fopen($path, $mode)) {
-            return false;
+        if (!$fp = @fopen($file, $mode)) {
+            throw new RuntimeException(sprintf('%s: failed to open file "%s"', __METHOD__, $file));
         }
 
         flock($fp, LOCK_EX);
         fwrite($fp, $data);
+        fflush($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
 
         return true;
+    }
+
+    /**
+     * Flushes the contents of a file.
+     *
+     * @param string $file The path to the file to be flushed.
+     * @return void
+     */
+    public static function flushFile(string $file):void{
+
+        if (!is_dir($dir = dirname($file))) {
+            if (@mkdir($dir, self::DIR_WRITE_MODE, true) == false) {
+                throw new RuntimeException(sprintf('%s: failed to create dir "%s"', __METHOD__, $dir));
+            }
+        }
+
+        if ($fp = @fopen($file, self::FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
+            fclose($fp);
+        }
     }
 }
 

@@ -11,6 +11,13 @@ use Chronolog\Helper\StringHelper;
 
 trait InitTrait
 {
+    /**
+     * Initializes the object with the given configuration and context.
+     *
+     * @param array $config The configuration options.
+     * @param mixed $context The context for initialization.
+     * @return void
+     */
     public function initialize(array $config = [], $context = null)
     {
         if ($context == null || !is_object( $context )) {

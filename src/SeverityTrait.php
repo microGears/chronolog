@@ -23,6 +23,12 @@ trait SeverityTrait
     /** @var array|Severity */
     protected mixed $severity;
 
+    /**
+     * Checks if the given log record has an allowed severity.
+     *
+     * @param LogEntity $record The log record to check.
+     * @return bool Returns true if the severity is allowed, false otherwise.
+     */
     public function isAllowedSeverity(LogEntity $record): bool
     {
         /** Inclusion strategy */

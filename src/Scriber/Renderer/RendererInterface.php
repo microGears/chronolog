@@ -20,6 +20,6 @@ use Chronolog\LogEntity;
  */
 interface RendererInterface
 {
-    public function render(LogEntity $record):mixed;
+    public function render(LogEntity $entity):mixed;
 }
 /** End of RendererInterface **/

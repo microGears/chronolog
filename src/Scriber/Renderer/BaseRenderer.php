@@ -35,12 +35,32 @@ class BaseRenderer extends RendererAbstract
      * @var string Simple
      */
     protected ?string $format = null;
+    /**
+     * Determines whether the renderer allows stringification.
+     *
+     * @var bool
+     */
     protected bool $allow_stringify = true;
+    
+    /**
+     * Base path (for overlap).
+     * $base_path property, which can be represents the base path of the project's files.
+     * This property is NULL and can be set to a string value representing the base path 
+     * that will be excluded from filenames when rendering(backtrace).
+     *
+     * @var string|null $base_path The base path for rendering.
+     */
     protected ?string $base_path = null;
 
-    public function render(LogEntity $record): mixed
+    /**
+     * Renders the log entity.
+     *
+     * @param LogEntity $entity The log entity to render.
+     * @return mixed The rendered log entity.
+     */
+    public function render(LogEntity $entity): mixed
     {
-        $clone = $record->fork();
+        $clone = $entity->fork();
         if ($this->getFormat() != $clone->datetime->getFormat()) {
             $clone->datetime->setFormat($this->getFormat());
         }
@@ -48,6 +68,12 @@ class BaseRenderer extends RendererAbstract
         return $this->formalizeArray($clone->toArray());
     }
 
+    /**
+     * Formalizes an array by ensuring that all keys are integers starting from 0.
+     *
+     * @param array $array The array to be formalized.
+     * @return array The formalized array.
+     */
     public function formalizeArray(array $array): array
     {
         $result = [];
@@ -87,6 +113,12 @@ class BaseRenderer extends RendererAbstract
         return $result;
     }
 
+    /**
+     * Formalizes an object.
+     *
+     * @param object $object The object to be formalized.
+     * @return mixed The formalized object.
+     */
     public function formalizeObject(object $object): mixed
     {
         $result = [];
@@ -107,6 +139,12 @@ class BaseRenderer extends RendererAbstract
         return $result;
     }
 
+    /**
+     * Formalizes an exception for rendering.
+     *
+     * @param Throwable $thr The exception to be formalized.
+     * @return mixed The formalized exception.
+     */
     public function formalizeException(Throwable $thr): mixed
     {
         $result = [

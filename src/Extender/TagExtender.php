@@ -26,24 +26,27 @@ class TagExtender extends ExtenderAbstract
 {
     private array $tags;
 
-    public function __invoke(LogEntity $record): LogEntity
+    public function __invoke(LogEntity $entity): LogEntity
     {
-        $record->assets['tags'] = $this->tags;
-        return $record;
+        $entity->assets['tags'] = $this->tags;
+        return $entity;
     }
 
     /**
-     * Get the value of tags
-     */
+     * Get the tags for the extender.
+     *
+     * @return array
+     */ 
     public function getTags(): array
     {
         return $this->tags;
     }
 
     /**
-     * Set the value of tags
+     * Set the tags for the extender.
      *
-     * @return  self
+     * @param array $tags The tags to set.
+     * @return self
      */
     public function setTags(array $tags = []): self
     {

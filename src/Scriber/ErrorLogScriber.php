@@ -31,8 +31,21 @@ class ErrorLogScriber extends ScriberAbstract
     const MSG_SAPI = 4;
     const MSG_TYPES = [self::MSG_SYSTEM, self::MSG_EMAIL, self::MSG_FILE, self::MSG_SAPI];
 
+    /**
+     * The message type for the ErrorLogScriber class.
+     *
+     * @var int
+     */
     protected int $message_type = self::MSG_SYSTEM;
+    /**
+     * The destination for the error log.
+     *
+     * @var string|null
+     */
     protected ?string $destination = null;
+    /**
+     * @var string|null $headers The headers for the error log scriber.
+     */
     protected ?string $headers = null;
 
     /**
@@ -43,6 +56,10 @@ class ErrorLogScriber extends ScriberAbstract
      */
     public function handle(LogEntity $entity): bool
     {
+        if($this->isAllowedSeverity($entity) === false) {
+            return false;
+        }
+
         $result = error_log(
             $this->getRenderer()->render($entity),
             $this->getMessageType(),
@@ -62,12 +79,23 @@ class ErrorLogScriber extends ScriberAbstract
         return new StringRenderer();
     }
 
+    /**
+     * Returns the message type for the error log scriber.
+     *
+     * @return int The message type.
+     */
     public function getMessageType(): int
     {
         return $this->message_type;
     }
 
 
+    /**
+     * Sets the message type for the ErrorLogScriber.
+     *
+     * @param int $value The message type value to set.
+     * @return self Returns the instance of the ErrorLogScriber.
+     */
     public function setMessageType(int $value): self
     {
         if (!in_array($value, self::MSG_TYPES))
@@ -117,7 +145,16 @@ class ErrorLogScriber extends ScriberAbstract
         return $this;
     }
 
-    public static function createInstance(Severity $severity = Severity::Debug, int $message_type = self::MSG_SYSTEM, ?string $destination = null, ?string $headers = null): self
+    /**
+     * Creates a new instance of the ErrorLogScriber class.
+     *
+     * @param Severity|array $severity The severity level or an array of severity levels.
+     * @param int $message_type The type of message to be logged.
+     * @param string|null $destination The destination for the log messages.
+     * @param string|null $headers Additional headers for the log messages.
+     * @return self The newly created instance of the ErrorLogScriber class.
+     */
+    public static function createInstance(Severity|array $severity = Severity::Debug, int $message_type = self::MSG_SYSTEM, ?string $destination = null, ?string $headers = null): self
     {
         return new ErrorLogScriber([
             'severity' => $severity,

@@ -34,22 +34,23 @@ class FileScriber extends ScriberAbstract
     protected string $ext         = self::FILE_EXT;
     protected int $size_threshold = 0;
     protected int $max_files      = 0;
-
     protected array $buffer           = [];
     protected bool $write_immediately = false;
 
-    public function __construct(array $config = [])
+    /**
+     * Handles a log record.
+     *
+     * @param LogEntity $entity The log entity to handle.
+     * @return bool Returns true if the log entity was successfully handled, false otherwise.
+     */
+    public function handle(LogEntity $entity): bool
     {
-        parent::__construct($config);
-        if ($this->write_immediately === false) {
-            register_shutdown_function([$this, 'write']);
+        if ($this->isAllowedSeverity($entity) === false) {
+            return false;
         }
-    }
 
-    public function handle(LogEntity $record): bool
-    {
         $result         = true;
-        $this->buffer[] = $this->getRenderer()->render($record);
+        $this->buffer[] = $this->getRenderer()->render($entity);
 
         if ($this->write_immediately) {
             $this->write();
@@ -62,7 +63,12 @@ class FileScriber extends ScriberAbstract
         return $result;
     }
 
-    public function getFileName()
+    /**
+     * Returns the file name associated with this FileScriber instance.
+     *
+     * @return string The file name.
+     */
+    public function getFileName(): string
     {
         $result = $this->basename;
 
@@ -113,10 +119,7 @@ class FileScriber extends ScriberAbstract
                     ksort($files_logs);
                     $count = reset($files_logs);
                     if (file_exists($file = FileHelper::prepFilename($location . '/' . $result . '_' . $count . '.' . $ext))) {
-                        /** clean old data */
-                        if ($fp = @fopen($file, FileHelper::FOPEN_WRITE_CREATE_DESTRUCTIVE)) {                            
-                            fclose($fp);
-                        }
+                        FileHelper::flushFile($file);
                     }
                 } else {
                     $count = reset($reference);
@@ -131,7 +134,12 @@ class FileScriber extends ScriberAbstract
         return $result;
     }
 
-    public function getPath()
+    /**
+     * Get the path of the file.
+     *
+     * @return string The path of the file.
+     */
+    public function getPath(): string
     {
         $result = FileHelper::prepLocation($this->path);
 
@@ -144,6 +152,23 @@ class FileScriber extends ScriberAbstract
         return $result;
     }
 
+    /**
+     * Set the value of path
+     *
+     * @return  self
+     */
+    public function setPath(string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * Writes the content to the file.
+     *
+     * @return void
+     */
     protected function write(): void
     {
         if (count($this->buffer) == 0) {
@@ -162,23 +187,19 @@ class FileScriber extends ScriberAbstract
         }
 
         $file = $this->getFileName();
-        if (!$handle = @fopen($file, FileHelper::FOPEN_WRITE_CREATE)) {
-            throw new RuntimeException(sprintf('%s: failed to open file "%s"', __METHOD__, $file));
-        }
-
-        flock($handle, LOCK_EX);
-        fwrite($handle, $data);
-        fflush($handle);
-        flock($handle, LOCK_UN);
-        fclose($handle);
-
-        @chmod($file, FileHelper::FILE_WRITE_MODE);
+        FileHelper::writeFile($file, $data, FileHelper::FOPEN_WRITE_CREATE);
 
         if ($this->getDataSize() > 0) {
             $this->write();
         }
     }
 
+    /**
+     * Retrieves the data from the FileScriber.
+     *
+     * @param bool $flush Whether to flush the data after retrieval. Default is false.
+     * @return string The retrieved data.
+     */
     public function getData(bool $flush = false): string
     {
         $result = implode(PHP_EOL, $this->buffer) . PHP_EOL;
@@ -189,6 +210,11 @@ class FileScriber extends ScriberAbstract
         return $result;
     }
 
+    /**
+     * Returns the size of the data.
+     *
+     * @return int The size of the data.
+     */
     public function getDataSize(): int
     {
         $size = 0;
@@ -198,7 +224,135 @@ class FileScriber extends ScriberAbstract
         return $size;
     }
 
-    public static function createInstance(string $path, ?string $basename = null, int $size_threshold = 0, int $max_files = 0, bool $write_immediately = false, Severity $severity = Severity::Debug): self
+    /**
+     * Get the value of basename
+     */
+    public function getBasename(): string
+    {
+        return $this->basename;
+    }
+
+    /**
+     * Set the value of basename
+     *
+     * @return  self
+     */
+    public function setBasename(?string $basename): self
+    {
+        $this->basename = $basename;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of ext
+     */
+    public function getExt(): string
+    {
+        return $this->ext;
+    }
+
+    /**
+     * Set the value of ext
+     *
+     * @return  self
+     */
+    public function setExt(string $ext): self
+    {
+        $this->ext = $ext;
+
+        return $this;
+    }
+
+    /**
+     * Get the size threshold for the file scriber.
+     *
+     * @return int The size threshold value.
+     */
+    public function getSizeThreshold(): int
+    {
+        return $this->size_threshold;
+    }
+
+
+    /**
+     * Sets the size threshold for the file scriber.
+     *
+     * @param int $value The size threshold value.
+     * @return self
+     */
+    public function setSizeThreshold(int $value): self
+    {
+        $this->size_threshold = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get the maximum number of files to keep.
+     *
+     * @return int The maximum number of files to keep.
+     */
+    public function getMaxFiles(): int
+    {
+        return $this->max_files;
+    }
+
+    /**
+     * Sets the maximum number of files to keep.
+     *
+     * @param int $max_files The maximum number of files to keep.
+     * @return self
+     */
+    public function setMaxFiles(int $max_files): self
+    {
+        $this->max_files = $max_files;
+
+        return $this;
+    }
+
+    /**
+     * Get the value indicating whether the file should be written immediately.
+     *
+     * @return bool The value indicating whether the file should be written immediately.
+     */
+    public function getWriteImmediately(): bool
+    {
+        return $this->write_immediately;
+    }
+
+    /**
+     * Sets the flag indicating whether to write immediately or buffer the output.
+     *
+     * @param bool $value The value indicating whether to write immediately or buffer the output.
+     * @return self
+     */
+    public function setWriteImmediately(bool $value): self
+    {
+        static $registered = false;
+        $this->write_immediately = $value;
+
+        if ($this->write_immediately === false && $registered === false) {
+            register_shutdown_function([$this, 'write']);
+            $registered = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Creates a new instance of the FileScriber class.
+     *
+     * @param string $path The path to the log file.
+     * @param string|null $basename The basename of the log file. Defaults to null.
+     * @param int $size_threshold The maximum size of the log file in bytes before it is rotated. Defaults to 0.
+     * @param int $max_files The maximum number of rotated log files to keep. Defaults to 0.
+     * @param bool $write_immediately Whether to write log messages immediately or buffer them. Defaults to false.
+     * @param Severity|array $severity The severity level(s) to log. Defaults to Severity::Debug.
+     * @return self The newly created instance of the FileScriber class.
+     */
+    public static function createInstance(string $path, ?string $basename = null, int $size_threshold = 0, int $max_files = 0, bool $write_immediately = false, Severity|array $severity = Severity::Debug): self
     {
         return new FileScriber([
             'severity' => $severity,

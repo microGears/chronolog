@@ -15,11 +15,24 @@ class JsonHelper
 {
     const DEFAULT_JSON_FLAGS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR;
 
+    /**
+     * Checks if a string is a valid JSON.
+     *
+     * @param string $string The string to check.
+     * @return bool Returns true if the string is a valid JSON, false otherwise.
+     */
     public static function isJson($string)
     {
         return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
     }
 
+    /**
+     * Encodes the given data into a JSON string.
+     *
+     * @param mixed $data The data to be encoded.
+     * @param int|null $encode_flags Optional. Bitmask consisting of JSON constants to control the encoding process.
+     * @return string The JSON string representation of the data.
+     */
     public static function encode($data, ?int $encode_flags = null): string
     {
         if ($encode_flags === null) {
@@ -34,6 +47,13 @@ class JsonHelper
         return $json;
     }
 
+    /**
+     * Throws an encode error with the specified code and data.
+     *
+     * @param int $code The error code.
+     * @param mixed $data The data causing the error.
+     * @return never This function never returns a value.
+     */
     private static function throwEncodeError(int $code, $data): never
     {
         $message = match ($code) {

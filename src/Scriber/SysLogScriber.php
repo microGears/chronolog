@@ -60,14 +60,37 @@ class SyslogScriber extends ScriberAbstract
         LOG_PID
     ];
 
+    /**
+     * The facility used for logging to syslog.
+     *
+     * @var int $facility The facility value. Default is LOG_USER.
+     */
     protected int $facility = LOG_USER;
+    /**
+     * The flags used for the SyslogScriber.
+     *
+     * @var int $flags The flags for the SyslogScriber.
+     */
     protected int $flags = LOG_PID;
+    /**
+     * @var string|null $prefix The prefix for the syslog messages.
+     */
     protected ?string $prefix = null;
 
-    public function handle(LogEntity $record): bool
+    /**
+     * Handles a log entity.
+     *
+     * @param LogEntity $entity The log entity to handle.
+     * @return bool Returns true if the log entity was handled successfully, false otherwise.
+     */
+    public function handle(LogEntity $entity): bool
     {
+        if($this->isAllowedSeverity($entity) === false) {
+            return false;
+        }
+
         openlog($this->prefix, $this->flags, $this->facility);
-        syslog($record->severity->value, $this->getRenderer()->render($record));
+        syslog($entity->severity->value, $this->getRenderer()->render($entity));
 
         if ($this->getCollaborative()) {
             return false;
@@ -130,7 +153,16 @@ class SyslogScriber extends ScriberAbstract
         return $this;
     }
 
-    public static function createInstance(string $prefix, int $facility = LOG_USER, int $flags = LOG_PID, Severity $severity = Severity::Debug): self
+    /**
+     * Creates an instance of SyslogScriber.
+     *
+     * @param string $prefix The prefix to prepend to log messages.
+     * @param int $facility The syslog facility to use (default: LOG_USER).
+     * @param int $flags The flags to use (default: LOG_PID).
+     * @param Severity|array $severity The severity level(s) to log (default: Severity::Debug).
+     * @return self The created instance of SyslogScriber.
+     */
+    public static function createInstance(string $prefix, int $facility = LOG_USER, int $flags = LOG_PID, Severity|array $severity = Severity::Debug): self
     {
         return new SysLogScriber([
             'prefix' => $prefix,

@@ -22,6 +22,12 @@ use Chronolog\LogEntity;
  */
 abstract class RendererAbstract extends AutoInitialized implements RendererInterface
 {
-    abstract public function render(LogEntity $record): mixed;    
+    /**
+     * Renders the log entity.
+     *
+     * @param LogEntity $entity The log entity to render.
+     * @return mixed The rendered log entity.
+     */
+    abstract public function render(LogEntity $entity): mixed;
 }
 /** End of RendererAbstract **/

@@ -198,6 +198,12 @@ class ArrayHelper
         return array_search( $needle, $column !== null ? array_column( $haystack, $column ) : $haystack, $strict );
     }
 
+    /**
+     * Converts an array to an instance of a class.
+     *
+     * @param array $array The array to convert.
+     * @return mixed The instance of the class.
+     */
     public static function arrayToInstance(array $array = []): mixed
     {
         $result = null;

@@ -29,14 +29,38 @@ class StringRenderer extends BaseRenderer
 {
     public const PATTERN = "[%datetime%]: %track% %severity_name% %message% %assets%\n";
 
+    /**
+     * @var string|null $pattern The pattern used by the StringRenderer.
+     */
     protected ?string $pattern = null;
+    /**
+     * Determines whether traces should be included in the rendered output.
+     *
+     * @var bool $include_traces
+     */
     protected bool $include_traces = true;
+    /**
+     * Determines whether multiline rendering is allowed.
+     *
+     * @var bool $allow_multiline
+     */
     protected bool $allow_multiline = false;
+    /**
+     * Determines whether the full namespace is allowed.
+     *
+     * @var bool $allow_fullnamespace
+     */
     protected bool $allow_fullnamespace = false;
 
-    public function render(LogEntity $record): mixed
+    /**
+     * Renders the log entity as a string.
+     *
+     * @param LogEntity $entity The log entity to render.
+     * @return mixed The rendered log entity.
+     */
+    public function render(LogEntity $entity): mixed
     {
-        $vars = parent::render($record);
+        $vars = parent::render($entity);
 
         $output = $this->getPattern();
         foreach ($vars['assets'] as $var => $val) {
@@ -70,6 +94,12 @@ class StringRenderer extends BaseRenderer
         return $output;
     }
 
+    /**
+     * Converts the given data into a string representation.
+     *
+     * @param mixed $data The data to be converted.
+     * @return string The string representation of the data.
+     */
     public function stringify(mixed $data): string
     {
         $result = $data;
@@ -116,6 +146,12 @@ class StringRenderer extends BaseRenderer
         return $this;
     }
 
+    /**
+     * Formalizes an exception into a string representation.
+     *
+     * @param Throwable $thr The exception to be formalized.
+     * @return mixed The formalized string representation of the exception.
+     */
     public function formalizeException(Throwable $thr): mixed
     {
         /** @todo Need to refactor */
@@ -127,6 +163,12 @@ class StringRenderer extends BaseRenderer
         return $result;
     }
 
+    /**
+     * Formalizes the given trace array.
+     *
+     * @param array $trace The trace array to be formalized.
+     * @return mixed The formalized trace.
+     */
     public function formalizeTrace(array $trace): mixed
     {
         $result = "[backtrace]\n";
