@@ -31,6 +31,7 @@ class LogBook extends AutoInitialized
     protected array $scribes = [];
     protected array $extenders = [];
     protected ?DateTimeZone $timezone = null;
+    protected bool $enabled = true;
 
     /**
      * Retrieves an array of scribes.
@@ -41,7 +42,6 @@ class LogBook extends AutoInitialized
     {
         return $this->scribes;
     }
-
 
     /**
      * Sets the scribes for the LogBook.
@@ -145,6 +145,10 @@ class LogBook extends AutoInitialized
 
     protected function log(int|Severity $severity, string $message, array $assets = [], null|DateTimeStatement $datetime = null): bool
     {
+        if (!$this->enabled) {
+            return false;
+        }
+        
         if (is_int($severity)) {
             $severity = Severity::fromValue($severity);
         }
@@ -211,5 +215,25 @@ class LogBook extends AutoInitialized
     public function debug(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Debug, $message, $assets);
+    }
+
+    /**
+     * Get the value of enabled
+     */ 
+    public function getEnabled():bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Set the value of enabled
+     *
+     * @return  self
+     */ 
+    public function setEnabled(bool $enabled):self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 }
