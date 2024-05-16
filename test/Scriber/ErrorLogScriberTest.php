@@ -20,6 +20,7 @@ use Chronolog\Scriber\Renderer\StringRenderer;
 use Chronolog\Severity;
 use Chronolog\Scriber\SyslogScriber;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * ErrorLogScriberTest
@@ -69,7 +70,7 @@ class ErrorLogScriberTest extends TestCase
                 'base_path' => dirname(__DIR__,2).'/src'
             ])
         ]);
-        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',1)]);
+        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',1,new RuntimeException('Test runtime exception',1))]);  
         $this->assertTrue($scriber->handle($record));
     }
     public function testWriteToEmail()
@@ -86,7 +87,7 @@ class ErrorLogScriberTest extends TestCase
             'destination' => 'user@mail.com',
             'headers' => 'From: admin@mail.com\r\n'
         ]);
-        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',2)]);
+        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',2,new RuntimeException('Test runtime exception',2))]);
         $this->assertTrue($scriber->handle($record));
     }
     public function testWriteToFile()
@@ -102,7 +103,7 @@ class ErrorLogScriberTest extends TestCase
             'message_type' => ErrorLogScriber::MSG_FILE,
             'destination' => dirname(__DIR__,2) . '/runtime/logs/'.basename(__FILE__,'.php').'.log'
         ]);
-        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',3)]);
+        $record = new LogEntity(new DateTimeStatement(), Severity::Error, "Simple message", "test", ['exception' => new \Exception('Test exception',3,new RuntimeException('Test runtime exception',3))]);
         $this->assertTrue($scriber->handle($record));
     }
 }

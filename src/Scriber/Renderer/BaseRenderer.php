@@ -41,7 +41,21 @@ class BaseRenderer extends RendererAbstract
      * @var bool
      */
     protected bool $allow_stringify = true;
-    
+
+    /**
+     * Determines whether the full namespace is allowed.
+     *
+     * @var bool $allow_fullnamespace
+     */
+    protected bool $allow_fullnamespace = false;
+
+    /**
+     * Determines whether traces should be included in the rendered output.
+     *
+     * @var bool $include_traces
+     */
+    protected bool $include_traces = true;
+
     /**
      * Base path (for overlap).
      * $base_path property, which can be represents the base path of the project's files.
@@ -88,10 +102,9 @@ class BaseRenderer extends RendererAbstract
                     } else if (is_nan($value)) {
                         $value = 'NaN';
                     }
-                } 
+                }
 
                 $result[$key] = $value;
-
             } else if (is_array($value)) {
                 $result[$key] = $this->formalizeArray($value);
             } else if ($value instanceof \DateTimeInterface) {
@@ -132,7 +145,7 @@ class BaseRenderer extends RendererAbstract
             }
 
             $result = $this->formalizeArray(get_object_vars($object));
-            $result['class'] = get_class($object);
+            $result['class'] = StringHelper::className($object, !$this->allow_fullnamespace);
 
             ksort($result);
         }
@@ -148,16 +161,18 @@ class BaseRenderer extends RendererAbstract
     public function formalizeException(Throwable $thr): mixed
     {
         $result = [
-            'class' => get_class($thr),
+            'class' => StringHelper::className($thr, !$this->allow_fullnamespace),
             'message' => $thr->getMessage(),
             'code' => (int) $thr->getCode(),
-            'file' => PathHelper::overlapPath($thr->getFile(),$this->base_path) . ':' . $thr->getLine(),
+            'file' => PathHelper::overlapPath($thr->getFile(), $this->base_path) . ':' . $thr->getLine(),
         ];
 
-        $trace = $thr->getTrace();
-        foreach ($trace as $frame) {
-            if (isset($frame['file'], $frame['line'])) {
-                $result['trace'][] = $frame['file'] . ':' . $frame['line'];
+        if ($this->include_traces) {
+            $trace = $thr->getTrace();
+            foreach ($trace as $frame) {
+                if (isset($frame['file'], $frame['line'])) {
+                    $result['trace'][] = PathHelper::overlapPath($frame['file'], $this->base_path) . ':' . $frame['line'];
+                }
             }
         }
 

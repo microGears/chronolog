@@ -33,24 +33,14 @@ class StringRenderer extends BaseRenderer
      * @var string|null $pattern The pattern used by the StringRenderer.
      */
     protected ?string $pattern = null;
-    /**
-     * Determines whether traces should be included in the rendered output.
-     *
-     * @var bool $include_traces
-     */
-    protected bool $include_traces = true;
+
     /**
      * Determines whether multiline rendering is allowed.
      *
      * @var bool $allow_multiline
      */
     protected bool $allow_multiline = false;
-    /**
-     * Determines whether the full namespace is allowed.
-     *
-     * @var bool $allow_fullnamespace
-     */
-    protected bool $allow_fullnamespace = false;
+
 
     /**
      * Renders the log entity as a string.
@@ -154,10 +144,13 @@ class StringRenderer extends BaseRenderer
      */
     public function formalizeException(Throwable $thr): mixed
     {
-        /** @todo Need to refactor */
-        $result = '[err] ' . StringHelper::className($thr, !$this->allow_fullnamespace) . ' #' . $thr->getCode() . ': ' . $thr->getMessage() . ' at ' . PathHelper::overlapPath($thr->getFile(), $this->base_path) . ':' . $thr->getLine();
+        $result = StringHelper::className($thr, !$this->allow_fullnamespace) . ' #' . $thr->getCode() . ': ' . $thr->getMessage() . ' at ' . PathHelper::overlapPath($thr->getFile(), $this->base_path) . ':' . $thr->getLine();
         if ($this->include_traces) {
             $result .= "\n" . $this->formalizeTrace($thr->getTrace());
+        }
+
+        if (($previous = $thr->getPrevious()) instanceof Throwable) {            
+            $result .= "\n[previous] ".$this->formalizeException($previous);
         }
 
         return $result;

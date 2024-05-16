@@ -50,7 +50,7 @@ class StringRendererTest  extends TestCase
             Severity::Debug,
             'message text',
             'test',
-            ['foo' => 'bar', new Exception('exception message')],
+            ['exception' => new Exception('exception message')],
         );
         $output = $renderer->render($logEntity);
         $this->assertMatchesRegularExpression('/^\[\d{4}\/\d{2}\/\d{2}\]: test DEBUG message text \{.*\}/', $output);
@@ -84,7 +84,7 @@ class StringRendererTest  extends TestCase
         $renderer = new StringRenderer(['include_traces' => true]);
         $exception = new Exception('Test exception', 123);
         $output = $renderer->formalizeException($exception);
-        $this->assertMatchesRegularExpression('/^\[err\] Exception #123: Test exception at .*StringRendererTest\.php:\d+/', $output);
+        $this->assertMatchesRegularExpression('/^Exception #123: Test exception at .*StringRendererTest\.php:\d+/', $output);
     }
 
     public function testFormalizeTrace(): void

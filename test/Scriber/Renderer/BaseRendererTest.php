@@ -28,7 +28,7 @@ class BaseRendererTest extends TestCase
 {
     public function testRender()
     {
-        $render = new BaseRenderer(['format' => 'Y/m/d']);
+        $render = new BaseRenderer(['format' => 'Y/m/d','allow_fullnamespace' => true]);
         $result = $render->render(
             new LogEntity(
                 new DateTimeStatement('Y.m.d'),
@@ -53,8 +53,7 @@ class BaseRendererTest extends TestCase
                 ]
             )
         );
-        // var_export($result);
-        // return;
+
         $this->assertEquals([
             'datetime' => date('Y/m/d'),
             'severity' => Severity::Debug->value,
@@ -68,7 +67,7 @@ class BaseRendererTest extends TestCase
                 'var_inf_1' => 'INF',
                 'var_inf_2' => '-INF',
                 'var_string' => 'string',
-                'var_res' => '0',
+                'var_res' => 0,
                 'var_null' => NULL,
                 'var_obj_1' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassOne','property' => 'value'],
                 'var_obj_2' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassDecorator','parent' => ['class' => 'Chronolog\\Test\\Scriber\\Renderer\\TestClassOne','property' => 'value'], 'items' => []],
