@@ -88,7 +88,7 @@ class BaseRenderer extends RendererAbstract
      * @param array $array The array to be formalized.
      * @return array The formalized array.
      */
-    public function formalizeArray(mixed $array): mixed
+    public function formalizeArray(array $array): array
     {
         $result = [];
 

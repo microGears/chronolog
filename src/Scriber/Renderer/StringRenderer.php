@@ -162,7 +162,7 @@ class StringRenderer extends BaseRenderer
      * @param array $trace The trace array to be formalized.
      * @return mixed The formalized trace.
      */
-    public function formalizeTrace(mixed $trace): mixed
+    public function formalizeTrace(array $trace): mixed
     {
         $result = "[backtrace]\n";
         $pad = strlen(count($trace)) + 1;

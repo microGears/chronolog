@@ -28,8 +28,8 @@ use RuntimeException;
 class LogBook extends AutoInitialized
 {
     protected string $track = 'log';
-    protected mixed $scribes = [];
-    protected mixed $extenders = [];
+    protected array $scribes = [];
+    protected array $extenders = [];
     protected ?DateTimeZone $timezone = null;
     protected bool $enabled = true;
 
@@ -38,7 +38,7 @@ class LogBook extends AutoInitialized
      *
      * @return array An array of scribes.
      */
-    public function getScribes(): mixed
+    public function getScribes(): array
     {
         return $this->scribes;
     }
@@ -49,7 +49,7 @@ class LogBook extends AutoInitialized
      * @param array $scribes An array of scribes.
      * @return self Returns the LogBook instance.
      */
-    public function setScribes(mixed $scribes): self
+    public function setScribes(array $scribes): self
     {
         foreach ($scribes as $scribe) {
             if(!is_object($scribe)) {
@@ -70,7 +70,7 @@ class LogBook extends AutoInitialized
      *
      * @return array An array of extenders.
      */
-    public function getExtenders(): mixed
+    public function getExtenders(): array
     {
         return $this->extenders;
     }
@@ -78,10 +78,10 @@ class LogBook extends AutoInitialized
     /**
      * Sets the extenders for the LogBook.
      *
-     * @param mixed $extenders The extenders to set.
+     * @param array $extenders The extenders to set.
      * @return self
      */
-    public function setExtenders($extenders): self
+    public function setExtenders(array $extenders): self
     {
         foreach ($extenders as $extender) {
             if(!is_object($extender)) {
@@ -143,7 +143,7 @@ class LogBook extends AutoInitialized
     }
 
 
-    protected function log(int|Severity $severity, string $message, mixed $assets = [], null|DateTimeStatement $datetime = null): bool
+    protected function log(int|Severity $severity, string $message, array $assets = [], null|DateTimeStatement $datetime = null): bool
     {
         if (!$this->enabled) {
             return false;
@@ -177,42 +177,42 @@ class LogBook extends AutoInitialized
         return $result;
     }
 
-    public function emergency(string $message, mixed $assets = []): bool
+    public function emergency(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Emergency, $message, $assets);
     }
 
-    public function alert(string $message, mixed $assets = []): bool
+    public function alert(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Alert, $message, $assets);
     }
 
-    public function critical(string $message, mixed $assets = []): bool
+    public function critical(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Critical, $message, $assets);
     }
 
-    public function error(string $message, mixed $assets = []): bool
+    public function error(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Error, $message, $assets);
     }
 
-    public function warning(string $message, mixed $assets = []): bool
+    public function warning(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Warning, $message, $assets);
     }
 
-    public function notice(string $message, mixed $assets = []): bool
+    public function notice(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Notice, $message, $assets);
     }
 
-    public function info(string $message, mixed $assets = []): bool
+    public function info(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Info, $message, $assets);
     }
 
-    public function debug(string $message, mixed $assets = []): bool
+    public function debug(string $message, array $assets = []): bool
     {
         return $this->log(Severity::Debug, $message, $assets);
     }

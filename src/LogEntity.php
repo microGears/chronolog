@@ -27,7 +27,7 @@ class LogEntity implements ArrayAccess
         public readonly Severity $severity,
         public readonly string $message,
         public readonly string $track, // belonging to the owner
-        public mixed $assets = [], // non persistent properties
+        public array $assets = [], // non persistent properties
         public bool $relevant = true, // relevance of the entry        
     ) {
     }

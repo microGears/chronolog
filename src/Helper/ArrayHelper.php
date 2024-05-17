@@ -25,7 +25,7 @@ class ArrayHelper
      * @param mixed $expected_type The expected type of the value (optional).
      * @return mixed The value of the specified key, or the default value if the key is not found.
      */
-    public static function element($key, mixed $haystack, $default = false, $expected_type = null):mixed
+    public static function element($key, array $haystack, $default = false, $expected_type = null):mixed
     {
         if (!is_array( $haystack )) {
             return $default;
@@ -56,7 +56,7 @@ class ArrayHelper
      * @param bool $keys_preserve Whether to preserve the keys of the extracted elements.
      * @return array The extracted elements as an associative array.
      */
-    public static function elements(mixed $keys, mixed $haystack,mixed $default = false, mixed $expected_type = null, bool $keys_preserve = false):mixed
+    public static function elements(mixed $keys, array $haystack,mixed $default = false, mixed $expected_type = null, bool $keys_preserve = false):array
     {
         if (!is_array( $haystack )) {
             return $haystack;
@@ -111,7 +111,7 @@ class ArrayHelper
      * @param array $haystack The array to filter.
      * @return array The filtered array.
      */
-    public static function filter(mixed $keys, mixed $haystack):mixed
+    public static function filter(mixed $keys, array $haystack):array
     {
         if (!is_array( $haystack )) {
             return $haystack;
@@ -140,7 +140,7 @@ class ArrayHelper
      *
      * @return mixed|null
      */
-    public static function keyFirst(mixed $array):mixed
+    public static function keyFirst(array $array):mixed
     {
         if (is_array( $array ) && count( $array )) {
             reset( $array );
@@ -159,7 +159,7 @@ class ArrayHelper
      *
      * @return mixed|null
      */
-    public static function keyLast($array):mixed
+    public static function keyLast(array $array):mixed
     {
         $result = null;
         if (is_array( $array )) {
@@ -178,7 +178,7 @@ class ArrayHelper
      * @param array $haystack The array to search for the keys.
      * @return bool Returns true if all the keys exist, false otherwise.
      */
-    public static function keysExists(mixed $keys, mixed $haystack):bool
+    public static function keysExists(array $keys, array $haystack):bool
     {
         return count( array_intersect_key( array_flip( $keys ), $haystack ) ) > 0;
     }
@@ -193,7 +193,7 @@ class ArrayHelper
      * @param mixed $column (optional) The column to search in multi-dimensional arrays. Default is null.
      * @return mixed|false The key of the found element, or false if not found.
      */
-    public static function search(mixed $needle, mixed $haystack, bool $strict = false, mixed $column = null)
+    public static function search(mixed $needle, array $haystack, bool $strict = false, mixed $column = null)
     {
         return array_search( $needle, $column !== null ? array_column( $haystack, $column ) : $haystack, $strict );
     }

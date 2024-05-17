@@ -21,7 +21,7 @@ namespace Chronolog;
  */
 final class LogBookShelf
 {
-    private static mixed $shelf = [];
+    private static array $shelf = [];
 
     /**
      * Stores a LogBook object in the shelf.
