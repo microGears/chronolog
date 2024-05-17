@@ -91,7 +91,7 @@ class TestClassOne
 class TestClassDecorator
 {
     public TestClassOne $parent;
-    public array $items = [];
+    public mixed $items = [];
     public function __construct()
     {
         $this->parent = new TestClassOne();

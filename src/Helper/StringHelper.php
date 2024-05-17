@@ -86,7 +86,7 @@ class StringHelper
      */
     public static function className(mixed $class, bool $basename = false): string
     {
-        $parts = explode('\\', is_object($class) ? get_class($class) : $class);
+        $parts = explode('\\', is_object($class) ? get_class($class) : (string)$class);
         if ($basename) {
             $className = array_pop($parts);
         } else

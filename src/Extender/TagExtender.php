@@ -24,7 +24,7 @@ use Chronolog\LogEntity;
  */
 class TagExtender extends ExtenderAbstract
 {
-    private array $tags;
+    private mixed $tags;
 
     public function __invoke(LogEntity $entity): LogEntity
     {
@@ -37,7 +37,7 @@ class TagExtender extends ExtenderAbstract
      *
      * @return array
      */ 
-    public function getTags(): array
+    public function getTags(): mixed
     {
         return $this->tags;
     }
@@ -48,7 +48,7 @@ class TagExtender extends ExtenderAbstract
      * @param array $tags The tags to set.
      * @return self
      */
-    public function setTags(array $tags = []): self
+    public function setTags(mixed $tags = []): self
     {
         $this->tags = $tags;
 
