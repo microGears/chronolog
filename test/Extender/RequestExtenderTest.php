@@ -11,6 +11,9 @@
  namespace Chronolog\Test\Extenders;
 
 use Chronolog\Extender\RequestExtender;
+use Chronolog\LogEntity;
+use Chronolog\DateTimeStatement;
+use Chronolog\Severity;
 use PHPUnit\Framework\TestCase;
 /**
  * RequestExtenderTest
@@ -20,40 +23,50 @@ use PHPUnit\Framework\TestCase;
  */
 class RequestExtenderTest extends TestCase
 {
-    private $requestExtender;
+    private $extender;
 
     protected function setUp(): void
     {
-        $this->requestExtender = new RequestExtender();
+        $this->extender = new RequestExtender();
+    }
+
+    public function testInvoke()
+    {
+        $extender = new RequestExtender();
+        $entity = new LogEntity(new DateTimeStatement(), Severity::Info, "Test for __invoke", 'test');
+
+        $result = $extender($entity);
+        $this->assertInstanceOf(LogEntity::class, $result);
+        $this->assertArrayHasKey('request', $result->assets);
     }
 
     public function testGetMethod()
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->assertEquals('POST', $this->requestExtender->getMethod());
+        $this->assertEquals('POST', $this->extender->getMethod());
     }
 
     public function testGetRequestType()
     {
-        $this->assertContains($this->requestExtender->getRequestType(), [RequestExtender::REQUEST_CLI, RequestExtender::REQUEST_HTTP, RequestExtender::REQUEST_AJAX]);
+        $this->assertContains($this->extender->getRequestType(), [RequestExtender::REQUEST_CLI, RequestExtender::REQUEST_HTTP, RequestExtender::REQUEST_AJAX]);
     }
 
     public function testGetUserAgent()
     {
         $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0';
-        $this->assertEquals('Mozilla/5.0', $this->requestExtender->getUserAgent());
+        $this->assertEquals('Mozilla/5.0', $this->extender->getUserAgent());
     }
 
     public function testGetUserIp()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $this->assertEquals('127.0.0.1', $this->requestExtender->getUserIP());
+        $this->assertEquals('127.0.0.1', $this->extender->getUserIP());
     }
 
     public function testGetUri()
     {
         $_SERVER['REQUEST_URI'] = '/test';
-        $this->assertEquals('/test', $this->requestExtender->getUri());
+        $this->assertEquals('/test', $this->extender->getUri());
     }
 }
 /** End of RequestExtenderTest **/

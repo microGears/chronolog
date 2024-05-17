@@ -75,6 +75,46 @@ class TypeHelper
 
         return false;
     }
+
+    function A(){
+        $arr = [];
+        $branches = shell_exec('git branch -v --no-abbrev');
+        if (is_string($branches) && 1 === preg_match('{^\* (.+?)\s+([a-f0-9]{40})(?:\s|$)}m', $branches, $matches)) {
+            $arr = [
+                'branch' => $matches[1],
+                'commit' => $matches[2],
+            ];
+        }
+
+        var_export($branches);
+        var_export($arr);
+    }
+
+    function B(){
+        $version = exec('git describe --tags --always 2>&1', $output, $return_var);
+
+        if ($return_var !== 0) {
+            throw new \RuntimeException("Не удалось получить версию проекта: " . implode("\n", $output));
+        }
+
+        $version = 'ver0.0.2-12-ga5aa41e';
+        // $version = '1.8.5.19';
+        if(preg_match('/(?<=\D)?\d[\d\.]*/', $version, $matches)){
+            echo $matches[0];
+        }
+
+        echo $version;
+    }
+
+    function C(){
+        $branch = exec('git rev-parse --abbrev-ref HEAD 2>&1', $output, $return_var);
+    
+        if ($return_var !== 0) {
+            throw new \RuntimeException("Не удалось получить имя ветки: " . implode("\n", $output));
+        }
+    
+        echo $branch;
+    }
 }
 
 /* End of file TypeHelper.php */

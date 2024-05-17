@@ -27,6 +27,17 @@ use PHPUnit\Framework\TestCase;
  */
 class TagExtenderTest extends TestCase
 {   
+    public function testInvoke()
+    {
+        $tagExtender = new TagExtender();
+        $tags = ['tag1', 'tag2', 'tag3'];
+        $tagExtender->setTags($tags);
+        $logEntity = new LogEntity(new DateTimeStatement(), Severity::Info, "Test for __invoke", 'test');
+        $result = $tagExtender($logEntity);
+        $this->assertArrayHasKey('tags', $result->assets);
+        $this->assertEquals($tags, $result->assets['tags']);
+    }
+    
     public function testSetTags()
     {
         $tagExtender = new TagExtender();
@@ -41,17 +52,6 @@ class TagExtenderTest extends TestCase
         $tags = ['tag1', 'tag2', 'tag3'];
         $tagExtender->setTags($tags);
         $this->assertEquals($tags, $tagExtender->getTags());
-    }
-    
-    public function testInvoke()
-    {
-        $tagExtender = new TagExtender();
-        $tags = ['tag1', 'tag2', 'tag3'];
-        $tagExtender->setTags($tags);
-        $logEntity = new LogEntity(new DateTimeStatement(), Severity::Info, "Test for __invoke", 'test');
-        $result = $tagExtender($logEntity);
-        $this->assertArrayHasKey('tags', $result->assets);
-        $this->assertEquals($tags, $result->assets['tags']);
     }
    
 }
