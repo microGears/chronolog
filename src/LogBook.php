@@ -143,7 +143,7 @@ class LogBook extends AutoInitialized
     }
 
 
-    protected function log(int|Severity $severity, string $message, array $assets = [], null|DateTimeStatement $datetime = null): bool
+    public function log(int|Severity $severity, string $message, array $assets = [], null|DateTimeStatement $datetime = null): bool
     {
         if (!$this->enabled) {
             return false;
