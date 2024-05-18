@@ -10,14 +10,13 @@
  */
 
 use Chronolog\DateTimeStatement;
-use PHPUnit\Framework\TestCase;
-use Chronolog\Scriber\BufferedScriber;
 use Chronolog\LogEntity;
+use Chronolog\Scriber\BufferedScriber;
 use Chronolog\Scriber\ErrorLogScriber;
 use Chronolog\Scriber\FileScriber;
 use Chronolog\Scriber\Renderer\StringRenderer;
-use Chronolog\Scriber\SyslogScriber;
 use Chronolog\Severity;
+use PHPUnit\Framework\TestCase;
 
 class BufferedScriberTest extends TestCase
 {
@@ -25,6 +24,16 @@ class BufferedScriberTest extends TestCase
     {
         $scriber = new BufferedScriber();
         $this->assertInstanceOf(BufferedScriber::class, $scriber);
+    }
+
+    public function testConstructorViaFactory()
+    {
+        $scriber = ErrorLogScriber::createInstance();
+        $wrapper = BufferedScriber::createInstance($scriber);
+        $this->assertInstanceOf('Chronolog\Scriber\BufferedScriber', $wrapper);
+
+        $wrapper = BufferedScriber::createInstance($scriber);
+        $this->assertInstanceOf('Chronolog\Scriber\BufferedScriber', $wrapper);        
     }
 
     public function testHandle()
