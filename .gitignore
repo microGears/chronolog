@@ -44,18 +44,17 @@ Thumbs.db
 *.mov
 *.wmv
 
+runtime/*.*
 
-log
-log-*.php
+logs/*.*
+
 *.ini
 composer.lock
 
-# Local environment directories
-.local*/
-.env*/
-locking
-runtime
-cache
+# PHPUnit
+.phpunit.result.cache
 
 # Vendors
 vendor
+.phpunit.result.cache
+*.cache
