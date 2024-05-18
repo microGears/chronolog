@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="test/init.php"
+         bootstrap="test/bootstrap.php"
          colors="true"
+         cacheResult="false"
+         stopOnDefect="true"
+         stopOnError="true"
+         executionOrder="depends,defects"
+         testdox="true"
          beStrictAboutTestsThatDoNotTestAnything="false">
     <testsuites>
         <testsuite name="Chronolog Test Suite">
