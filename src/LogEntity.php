@@ -12,6 +12,8 @@
 namespace Chronolog;
 
 use ArrayAccess;
+use Closure;
+use ReflectionObject;
 
 /**
  * LogRecord
@@ -100,7 +102,8 @@ class LogEntity implements ArrayAccess
      *
      * @return LogEntity
      */
-    public function fork():LogEntity{
+    public function fork(): LogEntity
+    {
         return static::clone($this);
     }
 
@@ -111,19 +114,21 @@ class LogEntity implements ArrayAccess
      * @param  LogEntity $source 
      * @return LogEntity
      */
-    public static function clone(LogEntity $source):LogEntity{
-        // first way
-        // return new LogRecord(
-        //     clone $source->datetime,
-        //     $source->severity,
-        //     $source->message,
-        //     $source->track,
-        //     unserialize(serialize($source->assets)),
-        //     $source->relevant            
-        // );
+    public static function clone(LogEntity $source): LogEntity
+    {
+        // First way
+        return new LogEntity(
+            clone $source->datetime,
+            $source->severity,
+            $source->message,
+            $source->track,
+            $source->assets,
+            $source->relevant            
+        );
 
-        // second way
-        return unserialize(serialize($source), ['allowed_classes' => true]);
+        // Second way
+        // Attention! Serializing \Closure will throw an error
+        // return unserialize(serialize($source), ['allowed_classes' => true]);
     }
 }
 /** End of LogRecord **/

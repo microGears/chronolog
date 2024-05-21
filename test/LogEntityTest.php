@@ -18,7 +18,7 @@ class LogEntityTest extends TestCase
     public function testLogEntityWithAssets()
     {
         // Arrange
-        $datetime = new DateTimeStatement('2024-05-06 19:02:15');
+        $datetime = new DateTimeStatement();
         $severity = Severity::Info;
         $message = 'Test message';
         $track = 'test_track';
@@ -73,7 +73,7 @@ class LogEntityTest extends TestCase
     public function testLogEntityWithRelevanceFalse()
     {
         // Arrange
-        $datetime = new DateTimeStatement('2024-05-06 19:02:15');
+        $datetime = new DateTimeStatement();
         $severity = Severity::Info;
         $message = 'Test message';
         $track = 'test_track';
@@ -89,7 +89,7 @@ class LogEntityTest extends TestCase
     public function testLogEntityToArray()
     {
         // Arrange
-        $datetime = new DateTimeStatement('2024-05-06 19:02:15');
+        $datetime = new DateTimeStatement();
         $severity = Severity::Info;
         $message = 'Test message';
         $track = 'test_track';
@@ -115,19 +115,19 @@ class LogEntityTest extends TestCase
     public function testLogEntityClone()
     {
         // Arrange
-        $datetime = new DateTimeStatement('2024-05-06 19:02:15');
+        $datetime = new DateTimeStatement();
         $severity = Severity::Info;
         $message = 'Test message';
         $track = 'test_track';
-        $assets = ['key1' => 'value1', 'key2' => 'value2'];
+        $assets = ['key1' => 'value1', 'key2' => 'value2', 'function' => function(){return true;}];
         $relevant = false;
 
         // Act
         $logEntity = new LogEntity($datetime, $severity, $message, $track, $assets, $relevant);
-        $clonedLogEntity = $logEntity->fork();
+        $clonedEntity = $logEntity->fork();
 
         // Assert
-        $this->assertEquals($logEntity, $clonedLogEntity);
-        $this->assertNotSame($logEntity, $clonedLogEntity);
+        $this->assertEquals($logEntity, $clonedEntity);
+        $this->assertNotSame($logEntity, $clonedEntity);
     }    
 }
