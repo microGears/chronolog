@@ -41,6 +41,25 @@ class StringRenderer extends BaseRenderer
      */
     protected bool $allow_multiline = false;
 
+    /**
+     * The maximum length of a row in the string renderer.
+     * Leave 0 to not limit the line size
+     * 
+     * Selecting the optimal log file line length to ensure readability:
+     * - 256 to 512 characters: system log files.    
+     * - 512 to 1024 characters: application log files.
+     * - 1024 to 2048 characters: log files for debugging and troubleshooting.
+     * 
+     * @var int
+     */
+    protected int $row_max_length = 0;
+    
+    /**
+     * The replacement string used when a row is oversize in the StringRenderer class.
+     *
+     * @var string
+     */
+    protected string $row_oversize_replacement = '...';
 
     /**
      * Renders the log entity as a string.
@@ -81,6 +100,10 @@ class StringRenderer extends BaseRenderer
             }
         }
 
+        if($this->row_max_length > 0) {
+            $output = StringHelper::limitLength($output, $this->row_max_length, $this->row_oversize_replacement);
+        }
+        
         return $output;
     }
 

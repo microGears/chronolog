@@ -107,6 +107,15 @@ class StringHelper
         return strtolower(strtr($name, ['-' => '', '_' => '', ' ' => '', '\\' => '', '/' => '']));
     }
 
+    public static function limitLength(string $string, int $length, string $replacement = '...'): string
+    {
+        if (mb_strlen($string) > $length) {
+            $string = mb_substr($string, 0, $length - mb_strlen($replacement)) . $replacement;
+        }
+
+        return $string;
+    }
+    
     /**
      * Throws an exception for a given preg error code.
      *

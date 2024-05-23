@@ -56,6 +56,28 @@ class StringRendererTest  extends TestCase
         $this->assertMatchesRegularExpression('/^\[\d{4}\/\d{2}\/\d{2}\]: test DEBUG message text \{.*\}/', $output);
     }
 
+    public function testRenderWithLengthLimit(): void
+    {
+        $renderer = new StringRenderer(
+            [
+                'format' => 'Y/m/d', 
+                'pattern' => '[%datetime%]: %message%',
+                'row_max_length' => 24,
+                'row_oversize_replacement' => '...'
+            ]
+        );
+
+        $logEntity = new LogEntity(
+            new DateTimeStatement('Ymd'),
+            Severity::Debug,
+            'message text',
+            'test',
+        );
+
+        $output = $renderer->render($logEntity);
+        $this->assertTrue(mb_strlen($output) <= 24);
+    }
+
     public function testStringify(): void
     {
         $renderer = new StringRenderer();
