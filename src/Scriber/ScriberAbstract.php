@@ -65,8 +65,7 @@ abstract class ScriberAbstract extends AutoInitialized implements ScriberInterfa
     public function setRenderer(mixed $renderer): self
     {
         if(!is_object($renderer)) {
-            // $renderer = AutoInitialized::turnInto($renderer);
-            $renderer = AutoInitialized::turnInto(123);
+            $renderer = AutoInitialized::turnInto($renderer);
         }
 
         $this->renderer = $renderer;
