@@ -330,12 +330,10 @@ class FileScriber extends ScriberAbstract
      */
     public function setWriteImmediately(bool $value): self
     {
-        static $registered = false;
         $this->write_immediately = $value;
 
-        if ($this->write_immediately === false && $registered === false) {
+        if ($this->write_immediately === false) {
             register_shutdown_function([$this, 'write']);
-            $registered = true;
         }
 
         return $this;
