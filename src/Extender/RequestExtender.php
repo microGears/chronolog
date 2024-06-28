@@ -70,9 +70,9 @@ class RequestExtender extends ExtenderAbstract
             'user_agent' => $this->getUserAgent(),
             'user_ip'    => $this->getUserIP(),
         ];
-        
-        if(count($this->exclude) > 0) {
-            $result = ArrayHelper::filter($this->exclude,$result);
+
+        if (count($this->exclude) > 0) {
+            $result = ArrayHelper::filter($this->exclude, $result);
         }
 
         $entity->assets['request'] = $result;
@@ -161,6 +161,23 @@ class RequestExtender extends ExtenderAbstract
      */
     public function getUri(): string
     {
+        // Is the request coming from the command line?
+        if (php_sapi_name() == 'cli' or defined('STDIN')) {
+            $uri = array_slice($_SERVER['argv'], 1);
+            $uri = $uri ? '/' . implode('/', $uri) : '';
+
+            if (strncmp($uri, '?/', 2) === 0) {
+                $uri = substr($uri, 2);
+            }
+            $parts = preg_split('#\?#i', $uri, 2);
+            $uri   = $parts[0];
+            if (isset($parts[1])) {
+                parse_str($parts[1], $_GET);
+            }
+
+            return $this->getUriString($uri);
+        }
+
         // Is there a REQUEST_URI variable?
         if (isset($_SERVER['REQUEST_URI'])) {
 
@@ -194,7 +211,7 @@ class RequestExtender extends ExtenderAbstract
 
             $uri = parse_url($uri, PHP_URL_PATH);
             $uri = str_replace(['//', '../'], '/', trim($uri, '/'));
-            
+
             return $this->getUriString($uri);
         }
 
