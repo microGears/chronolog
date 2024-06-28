@@ -164,15 +164,10 @@ class RequestExtender extends ExtenderAbstract
         // Is the request coming from the command line?
         if (php_sapi_name() == 'cli' or defined('STDIN')) {
             $uri = array_slice($_SERVER['argv'], 1);
-            $uri = $uri ? '/' . implode('/', $uri) : '';
-
+            $uri = $uri ? '/' . implode(' ', $uri) : '';
+    
             if (strncmp($uri, '?/', 2) === 0) {
                 $uri = substr($uri, 2);
-            }
-            $parts = preg_split('#\?#i', $uri, 2);
-            $uri   = $parts[0];
-            if (isset($parts[1])) {
-                parse_str($parts[1], $_GET);
             }
 
             return $this->getUriString($uri);
