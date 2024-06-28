@@ -12,6 +12,7 @@
 namespace Chronolog\Extender;
 
 use Chronolog\Extender\ExtenderAbstract;
+use Chronolog\Helper\ArrayHelper;
 use Chronolog\Helper\StringHelper;
 use Chronolog\LogEntity;
 
@@ -27,6 +28,11 @@ class RequestExtender extends ExtenderAbstract
     public const REQUEST_HTTP = 16;
     public const REQUEST_AJAX = 32;
 
+    public const REQUEST_TYPES = [
+        self::REQUEST_CLI  => 'CLI',
+        self::REQUEST_HTTP => 'HTTP',
+        self::REQUEST_AJAX => 'AJAX',
+    ];
     protected static $user_agent_headers = [
         // The default User-Agent string.
         'HTTP_USER_AGENT',
@@ -41,19 +47,44 @@ class RequestExtender extends ExtenderAbstract
         'HTTP_X_UCBROWSER_DEVICE_UA',
     ];
 
+    /**
+     * The array of properties to exclude from the request extender.
+     *
+     * @var array
+     */
+    protected array $exclude = [];
+
+    /**
+     * Invokes the RequestExtender.
+     *
+     * @param LogEntity $entity The LogEntity object.
+     * @return LogEntity The modified LogEntity object.
+     */
     public function __invoke(LogEntity $entity): LogEntity
     {
-        $entity->assets['request'] = [
+        $result = [
             'type'       => $this->getRequestType(),
+            'type_name'  => $this->getRequestTypeName(),
             'method'     => $this->getMethod(),
             'uri'        => $this->getUri(),
             'user_agent' => $this->getUserAgent(),
             'user_ip'    => $this->getUserIP(),
         ];
+        
+        if(count($this->exclude) > 0) {
+            $result = ArrayHelper::filter($result, $this->exclude);
+        }
+
+        $entity->assets['request'] = $result;
 
         return $entity;
     }
 
+    /**
+     * Returns the HTTP method of the request.
+     *
+     * @return string The HTTP method.
+     */
     public function getMethod(): string
     {
         return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
@@ -73,6 +104,16 @@ class RequestExtender extends ExtenderAbstract
         return $result;
     }
 
+    /**
+     * Returns the type name of the request.
+     *
+     * @return string The type name of the request.
+     */
+    public function getRequestTypeName(): string
+    {
+        return self::REQUEST_TYPES[$this->getRequestType()];
+    }
+
     public function getUserAgent(): string
     {
         $result = '';
@@ -88,6 +129,11 @@ class RequestExtender extends ExtenderAbstract
         return $result;
     }
 
+    /**
+     * Retrieves the IP address of the user making the request.
+     *
+     * @return string The IP address of the user.
+     */
     public function getUserIP(): string
     {
         $result = '0.0.0.0';
@@ -108,6 +154,11 @@ class RequestExtender extends ExtenderAbstract
         return $result;
     }
 
+    /**
+     * Returns the URI of the request.
+     *
+     * @return string The URI of the request.
+     */
     public function getUri(): string
     {
         // Is there a REQUEST_URI variable?
@@ -168,6 +219,12 @@ class RequestExtender extends ExtenderAbstract
         return '/';
     }
 
+    /**
+     * Returns the URI string.
+     *
+     * @param string $str The input string.
+     * @return string The URI string.
+     */
     private function getUriString($str): string
     {
         $str = StringHelper::clearInvisibleChars('/' . ltrim($str, '/'), false);
