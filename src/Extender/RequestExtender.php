@@ -72,7 +72,7 @@ class RequestExtender extends ExtenderAbstract
         ];
         
         if(count($this->exclude) > 0) {
-            $result = ArrayHelper::filter($result, $this->exclude);
+            $result = ArrayHelper::filter($this->exclude,$result);
         }
 
         $entity->assets['request'] = $result;
