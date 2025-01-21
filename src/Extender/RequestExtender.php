@@ -87,20 +87,24 @@ class RequestExtender extends ExtenderAbstract
      */
     public function getMethod(): string
     {
-        return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 
     public function getRequestType(): int
     {
         $result = 0;
-        if (php_sapi_name() === 'cli' || defined('STDIN')) {
-            $result = self::REQUEST_CLI;
-        } elseif (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            $result = self::REQUEST_AJAX;
-        } else {
-            $result = self::REQUEST_HTTP;
+        switch(php_sapi_name()) {
+            case 'cli':
+            case 'phpdbg':
+                $result = self::REQUEST_CLI;
+                break;
+            default:
+                $result = self::REQUEST_HTTP;
+                if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    $result = self::REQUEST_AJAX;
+                }
+                break;
         }
-
         return $result;
     }
 
@@ -163,7 +167,7 @@ class RequestExtender extends ExtenderAbstract
     {
         // Is the request coming from the command line?
         if (php_sapi_name() == 'cli' or defined('STDIN')) {
-            $uri = array_slice($_SERVER['argv'], 1);
+            $uri = array_slice((array)$_SERVER['argv'], 1);
             $uri = $uri ? '/' . implode(' ', $uri) : '';
     
             if (strncmp($uri, '?/', 2) === 0) {
