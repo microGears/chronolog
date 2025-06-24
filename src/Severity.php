@@ -38,17 +38,6 @@ enum Severity: int
     /** Debug: debug-level messages */
     case Debug = 7;
 
-    const NAMES = [
-        self::Emergency => 'EMERGENCY',
-        self::Alert => 'ALERT',
-        self::Critical => 'CRITICAL',
-        self::Error => 'ERROR',
-        self::Warning => 'WARNING',
-        self::Notice => 'NOTICE',
-        self::Info => 'INFO',
-        self::Debug => 'DEBUG',
-    ];
-
     /**
      * Returns the standardized all-capitals name of the severity
      *
