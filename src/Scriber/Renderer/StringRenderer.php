@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace Chronolog\Scriber\Renderer;
 
 use Chronolog\Helper\ArrayHelper;
@@ -25,8 +24,7 @@ use Throwable;
  * @author Maxim Kirichenko <kirichenko.maxim@gmail.com>
  * @datetime 08.05.2024 09:13:19
  */
-class StringRenderer extends BaseRenderer
-{
+class StringRenderer extends BaseRenderer {
     public const PATTERN = "[%datetime%]: %track% %severity_name% %message% %assets%\n";
 
     /**
@@ -44,16 +42,16 @@ class StringRenderer extends BaseRenderer
     /**
      * The maximum length of a row in the string renderer.
      * Leave 0 to not limit the line size
-     * 
+     *
      * Selecting the optimal log file line length to ensure readability:
-     * - 256 to 512 characters: system log files.    
+     * - 256 to 512 characters: system log files.
      * - 512 to 1024 characters: application log files.
      * - 1024 to 2048 characters: log files for debugging and troubleshooting.
-     * 
+     *
      * @var int
      */
     protected int $row_max_length = 0;
-    
+
     /**
      * The replacement string used when a row is oversize in the StringRenderer class.
      *
@@ -67,8 +65,7 @@ class StringRenderer extends BaseRenderer
      * @param LogEntity $entity The log entity to render.
      * @return mixed The rendered log entity.
      */
-    public function render(LogEntity $entity): mixed
-    {
+    public function render(LogEntity $entity): mixed {
         $vars = parent::render($entity);
 
         $output = $this->getPattern();
@@ -91,7 +88,8 @@ class StringRenderer extends BaseRenderer
         }
 
         if (false !== strpos($output, '%')) {
-            $output = preg_replace('/%(?:[^%]+)\.?.+?%/', '', $output);
+            // Remove only unresolved renderer placeholders like %message% or %assets.foo%.
+            $output = preg_replace('/%[a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*%/i', '', $output);
             $output = preg_replace('/\s{2}/', ' ', $output);
 
             /** @todo Is this really necessary? */
@@ -100,10 +98,10 @@ class StringRenderer extends BaseRenderer
             }
         }
 
-        if($this->row_max_length > 0) {
+        if ($this->row_max_length > 0) {
             $output = StringHelper::limitLength($output, $this->row_max_length, $this->row_oversize_replacement);
         }
-        
+
         return $output;
     }
 
@@ -113,14 +111,16 @@ class StringRenderer extends BaseRenderer
      * @param mixed $data The data to be converted.
      * @return string The string representation of the data.
      */
-    public function stringify(mixed $data): string
-    {
+    public function stringify(mixed $data): string {
         $result = $data;
         if (is_scalar($data) || null === $data) {
-            if (!is_string($data))
+            if (! is_string($data)) {
                 $result = var_export($data, true);
-        } else
+            }
+
+        } else {
             $result = JsonHelper::encode($data);
+        }
 
         if ($this->allow_multiline) {
             $result = preg_replace('/(?<!\\\\)\\\\[rn]/', "\n", $result);
@@ -139,8 +139,7 @@ class StringRenderer extends BaseRenderer
     /**
      * Get the value of format
      */
-    public function getPattern(): string
-    {
+    public function getPattern(): string {
         if ($this->pattern === null) {
             $this->pattern = static::PATTERN;
         }
@@ -152,8 +151,7 @@ class StringRenderer extends BaseRenderer
      *
      * @return  self
      */
-    public function setPattern($format): self
-    {
+    public function setPattern($format): self {
         $this->pattern = $format;
 
         return $this;
@@ -165,15 +163,14 @@ class StringRenderer extends BaseRenderer
      * @param Throwable $thr The exception to be formalized.
      * @return mixed The formalized string representation of the exception.
      */
-    public function formalizeException(Throwable $thr): mixed
-    {
-        $result = StringHelper::className($thr, !$this->allow_fullnamespace) . ' #' . $thr->getCode() . ': ' . $thr->getMessage() . ' at ' . PathHelper::overlapPath($thr->getFile(), $this->base_path) . ':' . $thr->getLine();
+    public function formalizeException(Throwable $thr): mixed {
+        $result = StringHelper::className($thr, ! $this->allow_fullnamespace) . ' #' . $thr->getCode() . ': ' . $thr->getMessage() . ' at ' . PathHelper::overlapPath($thr->getFile(), $this->base_path) . ':' . $thr->getLine();
         if ($this->include_traces) {
             $result .= "\n" . $this->formalizeTrace($thr->getTrace());
         }
 
-        if (($previous = $thr->getPrevious()) instanceof Throwable) {            
-            $result .= "\n[previous] ".$this->formalizeException($previous);
+        if (($previous = $thr->getPrevious()) instanceof Throwable) {
+            $result .= "\n[previous] " . $this->formalizeException($previous);
         }
 
         return $result;
@@ -185,15 +182,14 @@ class StringRenderer extends BaseRenderer
      * @param array $trace The trace array to be formalized.
      * @return mixed The formalized trace.
      */
-    public function formalizeTrace(array $trace): mixed
-    {
+    public function formalizeTrace(array $trace): mixed {
         $result = "[backtrace]\n";
-        $pad = strlen(count($trace)) + 1;
+        $pad    = strlen(count($trace)) + 1;
         foreach ($trace as $key => $value) {
             $result .= sprintf("#%-{$pad}d", $key);
 
             if (($class = ArrayHelper::element('class', $value))) {
-                $result .= StringHelper::className($class, !$this->allow_fullnamespace);
+                $result .= StringHelper::className($class, ! $this->allow_fullnamespace);
                 $result .= ArrayHelper::element('type', $value, '::');
             }
 
